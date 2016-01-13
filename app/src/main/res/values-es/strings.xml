@@ -1,0 +1,32 @@
+<resources>
+    <string name="app_name">KrimiTasks</string>
+
+    <string name="navigation_drawer_open">Abrir navegación</string>
+    <string name="navigation_drawer_close">Cerrar navegación</string>
+    <string name="action_settings">Opciones</string>
+    <string name="newTask">Nueva tarea</string>
+    <string name="save">Guardar</string>
+    <string name="delete">Borrar</string>
+    <string name="finished">Finalizada</string>
+    <string name="showFinished">Mostrar finalizadas</string>
+    <string name="DeleteAdvise">¿Borrar definitivamente la tarea?</string>
+    <string name="yes">OK</string>
+    <string name="cancel">Cancelar</string>
+    <string name="update">Actualizar</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Task details</string>
+    <string name="importing">Importar</string>
+    <string name="gallery">Galeria</string>
+    <string name="slide">Diapositivas</string>
+    <string name="tools">Herramientas</string>
+    <string name="cummunicate">Comunicación</string>
+    <string name="share">Compartir</string>
+    <string name="send">Enviar</string>
+    <string name="drawerTitle">KrimiTasks</string>
+    <string name="drawerSubtitle">kriminalaverno@gmail.com</string>
+
+    <!--menu strings-->
+    <string name="menu_share">Compartir</string>
+    <string name="menu_discard">Descartar</string>
+</resources>
