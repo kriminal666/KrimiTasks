@@ -8,7 +8,6 @@
     <string name="newTask">New Task</string>
     <string name="save">Save</string>
     <string name="delete">Delete</string>
-    <string name="finished">Finished</string>
     <string name="showFinished">Show finished</string>
     <string name="DeleteAdvise">Definitely delete task?</string>
     <string name="yes">OK</string>
@@ -28,7 +27,25 @@
     <string name="drawerTitle">KrimiTasks</string>
     <string name="drawerSubtitle">kriminalaverno@gmail.com</string>
 
+    <!--actionbar titles-->
+    <string name="actionBTodo">Tasks to do</string>
+    <string name="actionBFinish">Tasks finished</string>
+    <string name="actionBAll">All tasks</string>
+
     <!--menu strings-->
      <string name="menu_share">Share</string>
     <string name="menu_discard">Discard</string>
+    <string name="todo_tasks">Show Pending</string>
+    <string name="finished_tasks">Show Finished</string>
+    <string name="all_tasks">Show All</string>
+
+    <!--Database Strings-->
+    <string name="noTasks">No tasks found.</string>
+    <string name="inserted">New task saved!</string>
+    <string name="updated">Task Updated!</string>
+    <string name="finished">Task Finished!</string>
+    <string name="deleted">Task Deleted!</string>
+
+
+
 </resources>

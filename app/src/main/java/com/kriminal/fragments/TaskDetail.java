@@ -5,11 +5,19 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
+import android.view.animation.Animation;
+import android.widget.Button;
+import android.widget.EditText;
+import android.os.Vibrator;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.kriminal.database.Task;
+import com.kriminal.database.TasksDAO;
 import com.kriminal.main.R;
 
 /**
@@ -20,7 +28,7 @@ import com.kriminal.main.R;
  * Use the {@link TaskDetail#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class TaskDetail extends Fragment {
+public class TaskDetail extends Fragment implements View.OnClickListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -31,6 +39,15 @@ public class TaskDetail extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+
+    //Controls
+    private EditText taskTitle;
+    private EditText taskDescription;
+    private EditText taskDate;
+    private EditText taskTime;
+    private Button btnUpdate;
+    private Vibrator vibe;
+    private TasksDAO taskDao;
 
     public TaskDetail() {
         // Required empty public constructor
@@ -79,6 +96,33 @@ public class TaskDetail extends Fragment {
             textView.setText("Data send: "+ "id:"+id+" action: "+action);
         }
 
+        //Get DAO object
+        taskDao = new TasksDAO(getActivity());
+
+
+        //Get controls
+        taskTitle = (EditText) getActivity().findViewById(R.id.task_title);
+        taskDescription = (EditText) getActivity().findViewById(R.id.task_description);
+        taskDate = (EditText) getActivity().findViewById(R.id.task_date);
+        taskTime = (EditText) getActivity().findViewById(R.id.task_time);
+        btnUpdate = (Button) getActivity().findViewById(R.id.btn_update_task);
+        if (btnUpdate!=null){
+
+            btnUpdate.setText(R.string.update);
+            btnUpdate.setAnimation(new Animation() {
+                @Override
+                public boolean willChangeTransformationMatrix() {
+                    return super.willChangeTransformationMatrix();
+                }
+            });
+
+            btnUpdate.setOnClickListener(this);
+        }
+
+
+        //Set new menu
+        setHasOptionsMenu(true);
+
         return view;
 
     }
@@ -88,6 +132,16 @@ public class TaskDetail extends Fragment {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
         }
+    }
+
+    //We override this method to add own menu for this fragment
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
+        inflater.inflate(R.menu.detail_menu, menu);
+        super.onCreateOptionsMenu(menu,inflater);
+
+
     }
 
     @Override
@@ -105,6 +159,32 @@ public class TaskDetail extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onClick(View v) {
+        //Vibrate on click
+        vibe.vibrate(60); // 60 is time in ms
+        //Get Button
+        switch(v.getId()){
+            case R.id.btn_update_task:
+                insertTask();
+        }
+
+    }
+
+    private void insertTask() {
+        Task task = new Task();
+
+        task.setTitle(taskTitle.getText().toString());
+        task.setDescription(taskDescription.getText().toString());
+        task.setDate(taskDate.getText().toString());
+        task.setTime(taskTime.getText().toString());
+
+        boolean success = taskDao.insertTask(task);
+
+        Toast.makeText(getActivity(),""+success, Toast.LENGTH_SHORT).show();
+
     }
 
     /**

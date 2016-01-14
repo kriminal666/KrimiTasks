@@ -11,7 +11,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
     //Create table query
     String tableCreate = "CREATE TABLE tasks (id integer NOT NULL PRIMARY KEY," +
-            "title text,description text,date text,time text,finished_date text, finished_time text)";
+            "title text,description text,date text,time text,finish_date text, finish_time text)";
     //Constructor
     public SQLiteHelper(Context ctx,String database,SQLiteDatabase.CursorFactory cursor, int version){
         super(ctx,database,cursor,version);

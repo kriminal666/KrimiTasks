@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.kriminal.adapter.MyCardArrayMultiChoiceAdapter;
 import com.kriminal.api.Utils;
+import com.kriminal.database.SQLiteHelper;
 import com.kriminal.main.R;
 
 import java.util.ArrayList;
@@ -54,6 +55,11 @@ public class TasksView extends Fragment {
     //CARDS
     private MyCardArrayMultiChoiceAdapter mMyCardArrayMultiChoiceAdapter;
     private Vibrator vibe;
+
+    //DataBase
+    private ArrayList<String> queryResult = new ArrayList<String>();
+    private SQLiteHelper sqlHelper;
+
 
 
     public TasksView() {
@@ -203,6 +209,7 @@ public class TasksView extends Fragment {
         taskDetail.setArguments(extras);
 
 
+
     }
 
     @Override
@@ -233,4 +240,5 @@ public class TasksView extends Fragment {
         Toast.makeText(myContext, "finished tasks", Toast.LENGTH_SHORT).show();
 
     }
+
 }

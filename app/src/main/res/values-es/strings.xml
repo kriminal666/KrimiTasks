@@ -7,7 +7,6 @@
     <string name="newTask">Nueva tarea</string>
     <string name="save">Guardar</string>
     <string name="delete">Borrar</string>
-    <string name="finished">Finalizada</string>
     <string name="showFinished">Mostrar finalizadas</string>
     <string name="DeleteAdvise">¿Borrar definitivamente la tarea?</string>
     <string name="yes">OK</string>
@@ -26,7 +25,27 @@
     <string name="drawerTitle">KrimiTasks</string>
     <string name="drawerSubtitle">kriminalaverno@gmail.com</string>
 
+    <!--actionbar titles-->
+    <string name="actionBTodo">Tareas pendientes</string>
+    <string name="actionBFinish">Tareas finalizadas</string>
+    <string name="actionBAll">Todas las tareas</string>
+
+
     <!--menu strings-->
     <string name="menu_share">Compartir</string>
     <string name="menu_discard">Descartar</string>
+    <string name="todo_tasks">Ver Pendientes</string>
+    <string name="finished_tasks">Ver Finalizadas</string>
+    <string name="all_tasks">Ver Todas</string>
+
+    <!--Database Strings-->
+    <string name="noTasks">Tareas no encontradas.</string>
+    <string name="inserted">¡Nueva tarea guardada!</string>
+    <string name="updated">¡Tarea Actualizada!</string>
+    <string name="finished">¡Tarea Finalizada!</string>
+    <string name="deleted">¡Tarea Eliminada!</string>
+
+
+
+
 </resources>
