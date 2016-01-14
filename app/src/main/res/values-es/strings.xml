@@ -46,6 +46,16 @@
     <string name="deleted">¡Tarea Eliminada!</string>
 
 
+    <!--Advises-->
+    <string name="input_error_Title">¡Título requerido!</string>
+    <string name="input_errorDescription">¡Descripción requerida!</string>
+    <string name="input_error_date">¡Fecha requerida!</string>
+    <string name="input_error_Time">¡Hora requerida!</string>
 
+    <!--Hints-->
+    <string name="hint_title">TÍTULO</string>
+    <string name="hint_description">DESCRIPCIÓN</string>
+    <string name="hint_date">FECHA</string>
+    <string name="hint_time">HORA</string>
 
 </resources>

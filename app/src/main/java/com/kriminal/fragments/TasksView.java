@@ -204,8 +204,8 @@ public class TasksView extends Fragment {
 
         //Pass the id to the fragment detail
         Bundle extras = new Bundle();
-        extras.putInt("id",id);
-        extras.putString("ACTION","action");
+        extras.putInt(Utils.ID,id);
+        extras.putString(Utils.ACTION,Utils.ACTION_UPDATE);
         taskDetail.setArguments(extras);
 
 

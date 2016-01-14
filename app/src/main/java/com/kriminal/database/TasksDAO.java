@@ -178,13 +178,14 @@ public class TasksDAO {
             sqliteDatabase = sqlHelper.getWritableDatabase();
             //Execute the query
             sqliteDatabase.execSQL(insert);
-
+            //Close database
+            sqliteDatabase.close();
         }catch(Exception e){
             Toast.makeText(this.ctx, e.getMessage(), Toast.LENGTH_LONG).show();
             return false;
         }
-        Toast.makeText(this.ctx,R.string.inserted, Toast.LENGTH_LONG).show();
-        sqliteDatabase.close();
+
+
         return true;
     }
 
@@ -226,11 +227,8 @@ public class TasksDAO {
             Log.d(Utils.TAG, update + "\n" + e.getMessage());
             return false;
         }
-        //If we don't have exception show message
-        Toast.makeText(this.ctx,R.string.updated,Toast.LENGTH_LONG).show();
+        //If we don't have exception
         return true;
-
-
 
     }
 

@@ -4,6 +4,8 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.support.design.widget.TextInputLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -16,6 +18,7 @@ import android.os.Vibrator;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.kriminal.api.Utils;
 import com.kriminal.database.Task;
 import com.kriminal.database.TasksDAO;
 import com.kriminal.main.R;
@@ -48,6 +51,13 @@ public class TaskDetail extends Fragment implements View.OnClickListener {
     private Button btnUpdate;
     private Vibrator vibe;
     private TasksDAO taskDao;
+    private String action;
+    private int task_id;
+    private TextInputLayout title_layout;
+    private TextInputLayout description_layout;
+    private TextInputLayout date_layout;
+    private TextInputLayout time_layout;
+
 
     public TaskDetail() {
         // Required empty public constructor
@@ -85,39 +95,52 @@ public class TaskDetail extends Fragment implements View.OnClickListener {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_task_detail, container, false);
-        //get control
-        TextView textView = (TextView) view.findViewById(R.id.detailText);
 
-        // data send from taskView after loading this fragment
+        //Get data sended
         Bundle extras = getArguments();
-        if (extras != null) {
-            int id = extras.getInt("id");
-            String action = extras.getString("ACTION");
-            textView.setText("Data send: "+ "id:"+id+" action: "+action);
+
+        if (extras != null){
+            action = extras.getString(Utils.ACTION);
+            task_id = extras.getInt(Utils.ID);
+
         }
+        //Change title
+        getActivity().setTitle("Hello");
 
         //Get DAO object
         taskDao = new TasksDAO(getActivity());
-
+        //Vibrator
+        vibe = (Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE) ;
 
         //Get controls
-        taskTitle = (EditText) getActivity().findViewById(R.id.task_title);
-        taskDescription = (EditText) getActivity().findViewById(R.id.task_description);
-        taskDate = (EditText) getActivity().findViewById(R.id.task_date);
-        taskTime = (EditText) getActivity().findViewById(R.id.task_time);
-        btnUpdate = (Button) getActivity().findViewById(R.id.btn_update_task);
+        title_layout = (TextInputLayout)view.findViewById(R.id.title_text_input_layout);
+        description_layout = (TextInputLayout)view.findViewById(R.id.description_text_input_layout);
+        date_layout = (TextInputLayout) view.findViewById(R.id.date_text_input_layout);
+        time_layout = (TextInputLayout) view.findViewById(R.id.time_text_input_layout);
+        taskTitle = (EditText) view.findViewById(R.id.task_title);
+        taskDescription = (EditText) view.findViewById(R.id.task_description);
+        taskDate = (EditText) view.findViewById(R.id.task_date);
+        taskTime = (EditText) view.findViewById(R.id.task_time);
+        btnUpdate = (Button) view.findViewById(R.id.btn_update_task);
+        Log.v(Utils.TAG, "before check button");
         if (btnUpdate!=null){
-
-            btnUpdate.setText(R.string.update);
-            btnUpdate.setAnimation(new Animation() {
-                @Override
-                public boolean willChangeTransformationMatrix() {
-                    return super.willChangeTransformationMatrix();
-                }
-            });
+            switch (action){
+                case Utils.ACTION_INSERT :
+                    btnUpdate.setText(R.string.save);
+                    break;
+                case Utils.ACTION_UPDATE :
+                    btnUpdate.setText(R.string.update);
+                    break;
+            }
 
             btnUpdate.setOnClickListener(this);
         }
+
+        //disable layout errors
+        Utils.disableInputAdvise(title_layout, taskTitle);
+        Utils.disableInputAdvise(description_layout, taskDescription);
+        Utils.disableInputAdvise(date_layout, taskDate);
+        Utils.disableInputAdvise(time_layout, taskTime);
 
 
         //Set new menu
@@ -139,7 +162,7 @@ public class TaskDetail extends Fragment implements View.OnClickListener {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         menu.clear();
         inflater.inflate(R.menu.detail_menu, menu);
-        super.onCreateOptionsMenu(menu,inflater);
+        super.onCreateOptionsMenu(menu, inflater);
 
 
     }
@@ -153,6 +176,8 @@ public class TaskDetail extends Fragment implements View.OnClickListener {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
         }
+        Log.v(Utils.TAG, "onAttach");
+
     }
 
     @Override
@@ -161,29 +186,103 @@ public class TaskDetail extends Fragment implements View.OnClickListener {
         mListener = null;
     }
 
+
     @Override
     public void onClick(View v) {
+        Log.v(Utils.TAG, "Onclick");
         //Vibrate on click
         vibe.vibrate(60); // 60 is time in ms
         //Get Button
         switch(v.getId()){
             case R.id.btn_update_task:
-                insertTask();
+
+                insertUpdateTask();
+                break;
+
         }
 
     }
 
-    private void insertTask() {
-        Task task = new Task();
 
+
+    //Insert or update task
+    private void insertUpdateTask() {
+
+        //Get data
+        Task task = setTask();
+
+        if (task == null) return;
+
+        switch(action){
+            case Utils.ACTION_INSERT:
+                if(taskDao.insertTask(task)){
+                    Toast.makeText(getActivity(),R.string.inserted, Toast.LENGTH_SHORT).show();
+                }else{
+                    return;
+                }
+                break;
+            case Utils.ACTION_UPDATE:
+                if(taskDao.updateTask(task)){
+                    Toast.makeText(getActivity(),R.string.updated, Toast.LENGTH_SHORT).show();
+                }else{
+                    return;
+                }
+                break;
+
+        }
+
+
+
+
+    }
+
+    //set task values
+    private Task setTask() {
+
+        //Check fields
+        if(!checkTaskValues()) return null;
+
+        Task task = new Task();
         task.setTitle(taskTitle.getText().toString());
         task.setDescription(taskDescription.getText().toString());
         task.setDate(taskDate.getText().toString());
         task.setTime(taskTime.getText().toString());
 
-        boolean success = taskDao.insertTask(task);
+        return task;
+    }
 
-        Toast.makeText(getActivity(),""+success, Toast.LENGTH_SHORT).show();
+    //Check if fields are not empty
+    private boolean checkTaskValues(){
+
+        if(Utils.isEmptyEditText(taskTitle)) {
+
+            Utils.setInputAdvise(taskTitle,title_layout,getResources().getString(R.string.input_error_Title));
+
+            return false;
+        }
+
+        if (Utils.isEmptyEditText(taskDescription)){
+
+            Utils.setInputAdvise(taskDescription,description_layout,getResources().getString(R.string.input_errorDescription));
+
+            return false;
+        }
+
+        if (Utils.isEmptyEditText(taskDate)){
+
+            Utils.setInputAdvise(taskDate,date_layout,getResources().getString(R.string.input_error_date));
+
+            return false;
+        }
+
+        if (Utils.isEmptyEditText(taskTime)){
+
+            Utils.setInputAdvise(taskTime,time_layout,getResources().getString(R.string.input_error_Time));
+
+            return false;
+        }
+
+        return true;
 
     }
 

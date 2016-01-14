@@ -15,6 +15,7 @@
     <string name="update">Update</string>
 
 
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="importing">Import</string>
@@ -45,6 +46,19 @@
     <string name="updated">Task Updated!</string>
     <string name="finished">Task Finished!</string>
     <string name="deleted">Task Deleted!</string>
+
+    <!--Advises-->
+    <string name="input_error_Title">Title is required!</string>
+    <string name="input_errorDescription">Description is required!</string>
+    <string name="input_error_date">Date is required!</string>
+    <string name="input_error_Time">Time is required!</string>
+    <string name="hint_title">TITLE</string>
+    <string name="hint_description">DESCRIPTION</string>
+    <string name="hint_date">DATE</string>
+    <string name="hint_time">TIME</string>
+
+
+
 
 
 
