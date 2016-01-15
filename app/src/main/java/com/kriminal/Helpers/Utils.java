@@ -1,11 +1,13 @@
-package com.kriminal.api;
+package com.kriminal.Helpers;
 
-import android.graphics.PorterDuff;
+import android.content.Context;
 import android.support.design.widget.TextInputLayout;
+import android.view.ActionMode;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-
-import com.kriminal.main.R;
 
 
 /**
@@ -53,21 +55,43 @@ public class Utils {
     }
 
     /**
-     * Disable Errors when focus
+     * Disable Errors when focus and close keyboard on focus lost
+     *
      * @param layout
      * @param editText
      */
-    public static void disableInputAdvise(final TextInputLayout layout, EditText editText){
+    public static void disableInputAdvise(final TextInputLayout layout, final EditText editText, final Context context){
+
 
         editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus) {
-                    layout.setErrorEnabled(false);
+
+                    if (layout.isErrorEnabled()) {
+
+                        layout.setErrorEnabled(false);
+                    }
+
+                }else {
+                    disableKeyboard(editText,context);
                 }
             }
         });
     }
+
+    /**
+     * Disable keyboard on editText focus
+     *
+     * @param editText
+     * @param ctx
+     */
+    public static void disableKeyboard(EditText editText, Context ctx){
+        //Disable keyboard
+        InputMethodManager im = (InputMethodManager)ctx.getSystemService(Context.INPUT_METHOD_SERVICE);
+        im.hideSoftInputFromWindow(editText.getWindowToken(), 0);
+    }
+
 
 
 }

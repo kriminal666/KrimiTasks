@@ -2,6 +2,7 @@ package com.kriminal.main;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -16,13 +17,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
 
-import com.kriminal.api.Utils;
+import com.kriminal.Helpers.Utils;
 import com.kriminal.fragments.TaskDetail;
 import com.kriminal.fragments.TasksView;
 
@@ -177,6 +179,16 @@ public class MainActivity extends AppCompatActivity
                 Uri.parse("android-app://com.kriminal.crimitodos/http/host/path")
         );
         AppIndex.AppIndexApi.start(client, viewAction);
+    }
+
+
+
+    //When rotate screen continue activity
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
     }
 
     @Override

@@ -1,6 +1,5 @@
 package com.kriminal.fragments;
 
-import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
@@ -16,7 +15,7 @@ import android.widget.Toast;
 
 
 import com.kriminal.adapter.MyCardArrayMultiChoiceAdapter;
-import com.kriminal.api.Utils;
+import com.kriminal.Helpers.Utils;
 import com.kriminal.database.SQLiteHelper;
 import com.kriminal.main.R;
 
@@ -24,7 +23,6 @@ import java.util.ArrayList;
 
 import it.gmariotti.cardslib.library.internal.Card;
 import it.gmariotti.cardslib.library.internal.Card.OnCardClickListener;
-import it.gmariotti.cardslib.library.internal.CardArrayAdapter;
 import it.gmariotti.cardslib.library.internal.CardHeader;
 import it.gmariotti.cardslib.library.view.CardListView;
 

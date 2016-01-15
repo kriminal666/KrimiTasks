@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.kriminal.api.Utils;
+import com.kriminal.Helpers.Utils;
 import com.kriminal.main.R;
 
 import java.util.ArrayList;
