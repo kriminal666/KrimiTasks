@@ -1,4 +1,4 @@
-package com.kriminal.main;
+package com.kriminal.main_activity;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

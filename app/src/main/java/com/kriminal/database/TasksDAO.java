@@ -7,7 +7,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.kriminal.Helpers.Utils;
-import com.kriminal.main.R;
+import com.kriminal.main_activity.R;
 
 import java.util.ArrayList;
 

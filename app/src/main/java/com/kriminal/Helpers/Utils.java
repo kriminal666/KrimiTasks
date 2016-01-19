@@ -39,6 +39,19 @@ public class Utils {
     public static final String ACTION = "action" ;
     public static final String ID = "id";
 
+    //prefs keys
+    public static final String PREF_SWITCH_THUMBNAIL = "switch_card_thumbnail";
+    public static final String PREF_CARD_ANIMATION = "card_load_animation_list";
+
+    //animation values
+    public static final String ANIM_ALPHA = "1001";
+    public static final String ANIM_LEFT = "1002";
+    public static final String ANIM_RIGHT = "1003";
+    public static final String ANIM_BOTTOM = "1004";
+    public static final String ANIM_BOTTOM_RIGHT = "1005";
+    public static final String ANIM_SCALE= "1006";
+
+
     /**
      * Check if Edit text is empty
      * @param editText

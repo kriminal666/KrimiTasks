@@ -1,7 +1,8 @@
-package com.kriminal.main;
+package com.kriminal.main_activity;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
@@ -27,6 +28,25 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.kriminal.Helpers.Utils;
 import com.kriminal.fragments.TaskDetail;
 import com.kriminal.fragments.TasksView;
+import com.kriminal.settings_activity.SettingsActivity;
+
+/**
+ * *******************************************************************************
+ * Copyright (c) 2016 kriminal666.
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
+ *  *****************************************************************************
+ */
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener
@@ -149,6 +169,9 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_slideshow) {
 
         } else if (id == R.id.nav_manage) {
+            //Go to settings
+            Intent intent = new Intent().setClass(MainActivity.this, SettingsActivity.class);
+            startActivity(intent);
 
         } else if (id == R.id.nav_share) {
 

@@ -1,6 +1,5 @@
 package com.kriminal.adapter;
 
-import android.app.Fragment;
 import android.content.Context;
 import android.os.Vibrator;
 import android.util.SparseBooleanArray;
@@ -11,7 +10,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.kriminal.fragments.TasksView;
-import com.kriminal.main.R;
+import com.kriminal.main_activity.R;
 
 import java.util.ArrayList;
 import java.util.List;

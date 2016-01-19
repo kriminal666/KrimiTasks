@@ -1,3 +1,22 @@
+<!--
+
+     Copyright (c) 2016 kriminal666.
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+       You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+       Unless required by applicable law or agreed to in writing, software
+       distributed under the License is distributed on an "AS IS" BASIS,
+       WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+       See the License for the specific language governing permissions and
+       limitations under the License.
+
+
+    -->
+
 <resources>
     <string name="app_name">KrimiTasks</string>
 
@@ -18,7 +37,7 @@
     <string name="importing">Importar</string>
     <string name="gallery">Galeria</string>
     <string name="slide">Diapositivas</string>
-    <string name="tools">Herramientas</string>
+    <string name="options">Opciones</string>
     <string name="cummunicate">Comunicación</string>
     <string name="share">Compartir</string>
     <string name="send">Enviar</string>
@@ -59,5 +78,33 @@
     <string name="hint_description">DESCRIPCIÓN</string>
     <string name="hint_date">FECHA</string>
     <string name="hint_time">HORA</string>
+    <string name="pref_header_general">General</string>
+    <string name="pref_header_notifications">Notificaciones</string>
+    <string name="pref_ringtone_silent">Silencio</string>
+    <string name="pref_title_display_name">Nueva notificación</string>
+    <string name="pref_title_new_message_notifications">Tono de llamada</string>
+    <string name="pref_title_vibrate">Vibración</string>
+    <string name="title_activity_settings">Opciones</string>
+    <string name="title_activity_splash_screen">Pantalla inicio</string>
+    <string name="pref_header_cards_general">Opciones de Tarjetas</string>
+    <string name="pref_title_social_recommendations">Habilitar imagen en las tarjetas</string><string name="pref_description_social_recommendations">La tarjeta mostrará diferente imagen
+    para las tareas pendientes o finalizadas.</string>
+    <string name="pref_card_load_animations_title">Selecciona animación de carga</string>
+    <string-array name="pref_card_load_animations">
+        <item>Alpha</item>
+        <item>Izquierda</item>
+        <item>Derecha</item>
+        <item>Inferior</item>
+        <item>Inferior derecha</item>
+        <item>Escalado</item>
+    </string-array>
+    <string-array name="pref_card_load_animations_values">
+        <item>1001</item>
+        <item>1002</item>
+        <item>1003</item>
+        <item>1004</item>
+        <item>1005</item>
+        <item>1006</item>
+    </string-array>
 
 </resources>

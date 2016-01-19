@@ -1,12 +1,13 @@
 package com.kriminal.fragments;
 
-import android.app.ActionBar;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -15,15 +16,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.os.Vibrator;
-import android.view.ViewTreeObserver;
 import android.widget.Toast;
 
 
+import com.kriminal.adapter.CardAnimationAdapter;
 import com.kriminal.adapter.MyCardArrayMultiChoiceAdapter;
 import com.kriminal.Helpers.Utils;
 import com.kriminal.database.SQLiteHelper;
 import com.kriminal.header.CustomCardHeader;
-import com.kriminal.main.R;
+import com.kriminal.main_activity.R;
+import com.kriminal.preferences.GetPreferences;
+import com.kriminal.settings_activity.SettingsActivity;
 import com.nhaarman.listviewanimations.appearance.AnimationAdapter;
 import com.nhaarman.listviewanimations.appearance.simple.SwingBottomInAnimationAdapter;
 import com.nhaarman.listviewanimations.appearance.simple.SwingRightInAnimationAdapter;
@@ -33,6 +36,7 @@ import java.util.ArrayList;
 import it.gmariotti.cardslib.library.internal.Card;
 import it.gmariotti.cardslib.library.internal.Card.OnCardClickListener;
 import it.gmariotti.cardslib.library.internal.CardHeader;
+import it.gmariotti.cardslib.library.internal.CardThumbnail;
 import it.gmariotti.cardslib.library.internal.base.BaseCard;
 import it.gmariotti.cardslib.library.view.CardListView;
 
@@ -75,6 +79,9 @@ public class TasksView extends Fragment {
 
     //Title
     private int title = -1;
+
+    //Shared preferences
+    private GetPreferences preferences;
 
 
 
@@ -130,6 +137,9 @@ public class TasksView extends Fragment {
         }
 
         setTitle();
+
+        //Get preferences object
+        preferences = new GetPreferences(getActivity());
 
         updateDisplay();
 
@@ -224,6 +234,8 @@ public class TasksView extends Fragment {
 
     //Method to fill cardList
     private void updateDisplay() {
+        //get user prefs
+
         ArrayList<Card> cardList = new ArrayList<Card>();
         //Get the list view
         CardListView tasksView = (CardListView) getActivity().findViewById(R.id.tasksList);
@@ -231,11 +243,11 @@ public class TasksView extends Fragment {
         for (int i = 0; i < 20; i++) {
             Card taskCard = new Card(getActivity());
             taskCard.setId(String.valueOf(i));
-            CardHeader header = new CardHeader(getActivity());
+            CustomCardHeader header = new CustomCardHeader(getActivity());
             Log.d(Utils.TAG,"antes de set inner header");
-            header.setTitle("Header Task " + i);
-            //header.setInner_date("date");
-            //header.setInner_title("Task todo");
+            header.setTitle("Go to the market " + i);
+            header.setDate("15/12/2017");
+            header.setTime("12:00");
 
             //Add overflow buttons to card with menu click listener
             header.setPopupMenu(R.menu.card_overflow_menu, new CardHeader.OnClickCardHeaderPopupMenuListener() {
@@ -259,6 +271,20 @@ public class TasksView extends Fragment {
                 }
             });
             taskCard.addCardHeader(header);
+
+            //Add thumbnail
+            if(preferences.cardThumbnail()){
+                //Create thumbnail
+                CardThumbnail thumb = new CardThumbnail(getActivity());
+
+                //Set resource
+                thumb.setDrawableResource(R.drawable.todo1_48);
+
+                //Add thumbnail to a card
+                taskCard.addCardThumbnail(thumb);
+
+            }
+
             //Make card swapeable with undo
             taskCard.setSwipeable(true);
             taskCard.setOnSwipeListener(new Card.OnSwipeListener() {
@@ -309,9 +335,33 @@ public class TasksView extends Fragment {
         //Set adapter
         mMyCardArrayMultiChoiceAdapter = new MyCardArrayMultiChoiceAdapter(getActivity(),cardList);
         mMyCardArrayMultiChoiceAdapter.setEnableUndo(true);
+        String animation = preferences.cardAnimation();
+        AnimationAdapter animationAdapter = null;
+        switch(animation){
+            case Utils.ANIM_ALPHA:
+                animationAdapter =CardAnimationAdapter.setAlphaAdapter(mMyCardArrayMultiChoiceAdapter, tasksView);
+                break;
+            case Utils.ANIM_LEFT:
+                animationAdapter = CardAnimationAdapter.setLeftAdapter(mMyCardArrayMultiChoiceAdapter, tasksView);
+                break;
+            case Utils.ANIM_RIGHT:
+                animationAdapter = CardAnimationAdapter.setRightAdapter(mMyCardArrayMultiChoiceAdapter, tasksView);
+                break;
+            case Utils.ANIM_BOTTOM :
+                animationAdapter = CardAnimationAdapter.setBottomAdapter(mMyCardArrayMultiChoiceAdapter, tasksView);
+                break;
+            case Utils.ANIM_BOTTOM_RIGHT:
+                animationAdapter = CardAnimationAdapter.setBottomRightAdapter(mMyCardArrayMultiChoiceAdapter, tasksView);
+                break;
+            case Utils.ANIM_SCALE :
+                animationAdapter = CardAnimationAdapter.setScaleAdapter(mMyCardArrayMultiChoiceAdapter, tasksView);
+                break;
+            default:
+                animationAdapter = setBottomRightAdapter(mMyCardArrayMultiChoiceAdapter, tasksView);
+        }
         if (tasksView != null){
 
-            setBottomRightAdapter(mMyCardArrayMultiChoiceAdapter, tasksView);
+            tasksView.setExternalAdapter(animationAdapter,mMyCardArrayMultiChoiceAdapter);
             tasksView.setChoiceMode(tasksView.CHOICE_MODE_MULTIPLE_MODAL);
 
         }
@@ -351,10 +401,10 @@ public class TasksView extends Fragment {
     /**
      * Bottom-right animation
      */
-    private void setBottomRightAdapter(MyCardArrayMultiChoiceAdapter adapter, CardListView listView) {
+    private AnimationAdapter setBottomRightAdapter(MyCardArrayMultiChoiceAdapter adapter, CardListView listView) {
         AnimationAdapter animCardArrayAdapter = new SwingBottomInAnimationAdapter(new SwingRightInAnimationAdapter(adapter));
         animCardArrayAdapter.setAbsListView(listView);
-        listView.setExternalAdapter(animCardArrayAdapter, adapter);
+        return animCardArrayAdapter;
     }
 
     @Override

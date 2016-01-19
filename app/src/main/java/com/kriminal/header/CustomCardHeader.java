@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.kriminal.Helpers.Utils;
-import com.kriminal.main.R;
+import com.kriminal.main_activity.R;
 
 import it.gmariotti.cardslib.library.internal.CardHeader;
 
@@ -34,6 +34,7 @@ public class CustomCardHeader extends CardHeader {
 
     private String title;
     private String date ;
+    private String time;
 
 
 
@@ -50,9 +51,19 @@ public class CustomCardHeader extends CardHeader {
             //Get controls
              TextView inner_title= (TextView) view.findViewById(R.id.header_title);
              TextView inner_date = (TextView) view.findViewById(R.id.header_data);
+            TextView inner_time = (TextView) view.findViewById(R.id.header_time);
             //Set controls
-            inner_title.setText(this.title);
-            inner_date.setText(this.title);
+            if(inner_title != null){
+                inner_title.setText(this.title);
+            }
+            if(inner_date != null){
+                inner_date.setText(this.date);
+            }
+            if(inner_time != null){
+                inner_time.setText(this.time);
+            }
+
+
 
         }
     }
@@ -73,5 +84,13 @@ public class CustomCardHeader extends CardHeader {
 
     public void setDate(String date) {
         this.date = date;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
     }
 }
