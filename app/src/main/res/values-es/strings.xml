@@ -26,9 +26,11 @@
     <string name="drawerSubtitle">kriminalaverno@gmail.com</string>
 
     <!--actionbar titles-->
-    <string name="actionBTodo">Tareas pendientes</string>
-    <string name="actionBFinish">Tareas finalizadas</string>
-    <string name="actionBAll">Todas las tareas</string>
+    <string name="title_actionBTodo">Tareas pendientes</string>
+    <string name="title_actionBFinish">Tareas finalizadas</string>
+    <string name="title_actionBAll">Todas las tareas</string>
+    <string name="title_actionBUpdateTask">Actualizar Tarea</string>
+    <string name="title_actionBCreateTask">Crear Tarea</string>
 
 
     <!--menu strings-->

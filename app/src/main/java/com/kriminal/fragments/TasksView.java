@@ -1,5 +1,6 @@
 package com.kriminal.fragments;
 
+import android.app.ActionBar;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
@@ -8,25 +9,49 @@ import android.os.Bundle;
 import android.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.os.Vibrator;
+import android.view.ViewTreeObserver;
 import android.widget.Toast;
 
 
 import com.kriminal.adapter.MyCardArrayMultiChoiceAdapter;
 import com.kriminal.Helpers.Utils;
 import com.kriminal.database.SQLiteHelper;
+import com.kriminal.header.CustomCardHeader;
 import com.kriminal.main.R;
+import com.nhaarman.listviewanimations.appearance.AnimationAdapter;
+import com.nhaarman.listviewanimations.appearance.simple.SwingBottomInAnimationAdapter;
+import com.nhaarman.listviewanimations.appearance.simple.SwingRightInAnimationAdapter;
 
 import java.util.ArrayList;
 
 import it.gmariotti.cardslib.library.internal.Card;
 import it.gmariotti.cardslib.library.internal.Card.OnCardClickListener;
 import it.gmariotti.cardslib.library.internal.CardHeader;
+import it.gmariotti.cardslib.library.internal.base.BaseCard;
 import it.gmariotti.cardslib.library.view.CardListView;
 
 /**
+ *  * *******************************************************************************
+ * Copyright (c) 2016 kriminal666.
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
+ *  *****************************************************************************
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
  * {@link TasksView.OnFragmentInteractionListener} interface
@@ -47,6 +72,9 @@ public class TasksView extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+
+    //Title
+    private int title = -1;
 
 
 
@@ -95,7 +123,22 @@ public class TasksView extends Fragment {
     public  void onStart(){
         super.onStart();
         vibe = (Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE) ;
-       updateDisplay();
+        if(title ==-1) {
+
+            title = R.string.title_actionBTodo;
+
+        }
+
+        setTitle();
+
+        updateDisplay();
+
+    }
+
+    //Set the title
+    private void setTitle() {
+
+      getActivity().setTitle(title);
 
     }
 
@@ -104,6 +147,9 @@ public class TasksView extends Fragment {
                              Bundle savedInstanceState) {
 
         myContext = getActivity().getBaseContext();
+
+        //Set new menu
+        setHasOptionsMenu(true);
 
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_tasks_view, container, false);
@@ -118,6 +164,51 @@ public class TasksView extends Fragment {
         }
     }
 
+    //We override this method to add own menu for this fragment
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
+        inflater.inflate(R.menu.main, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        switch (id){
+            case R.id.todo_tasks:
+                title = R.string.title_actionBTodo;
+                setTitle();
+                break;
+            case R.id.finished_tasks:
+                title = R.string.title_actionBFinish;
+                setTitle();
+                break;
+            case R.id.all_tasks:
+                title = R.string.title_actionBAll;
+                setTitle();
+                break;
+
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+
+    /*@Override
+    public void onPause() {
+        super.onPause();
+
+        getActivity().getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+
+    }*/
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -135,14 +226,61 @@ public class TasksView extends Fragment {
     private void updateDisplay() {
         ArrayList<Card> cardList = new ArrayList<Card>();
         //Get the list view
-         CardListView tasksView = (CardListView)getActivity().findViewById(R.id.tasksList);
+        CardListView tasksView = (CardListView) getActivity().findViewById(R.id.tasksList);
         //Fill 20 example cards
-        for (int i = 0; i<20; i++){
+        for (int i = 0; i < 20; i++) {
             Card taskCard = new Card(getActivity());
             taskCard.setId(String.valueOf(i));
             CardHeader header = new CardHeader(getActivity());
-            header.setTitle("Task " + i);
+            Log.d(Utils.TAG,"antes de set inner header");
+            header.setTitle("Header Task " + i);
+            //header.setInner_date("date");
+            //header.setInner_title("Task todo");
+
+            //Add overflow buttons to card with menu click listener
+            header.setPopupMenu(R.menu.card_overflow_menu, new CardHeader.OnClickCardHeaderPopupMenuListener() {
+                @Override
+                public void onMenuItemClick(BaseCard baseCard, MenuItem menuItem) {
+                    vibe.vibrate(60); // 60 is time in ms
+                    switch (menuItem.getItemId()) {
+
+                        case (R.id.updateTaskMenu):
+                            //Future actions here
+                            vibe.vibrate(60);
+                            Toast.makeText(getActivity(), "UpdateTask", Toast.LENGTH_SHORT).show();
+                            break;
+                        case (R.id.deleteTaskMenu):
+                            vibe.vibrate(60);
+                            Toast.makeText(getActivity(), "DeleteTask", Toast.LENGTH_SHORT).show();
+                            //Call the method to delete
+                            //deleteTeacher(Integer.valueOf(baseCard.getId()));
+                            break;
+                    }
+                }
+            });
             taskCard.addCardHeader(header);
+            //Make card swapeable with undo
+            taskCard.setSwipeable(true);
+            taskCard.setOnSwipeListener(new Card.OnSwipeListener() {
+                @Override
+                public void onSwipe(Card card) {
+                    //we mark for deletion
+                    vibe.vibrate(60); // 60 is time in ms
+                    //markForDeletion(card.getId(),"y");
+
+                }
+            });
+            //swipe undo action
+            taskCard.setOnUndoSwipeListListener(new Card.OnUndoSwipeListListener() {
+                @Override
+                public void onUndoSwipe(Card card) {
+                    //we undo the mark for deletion
+                    vibe.vibrate(60); // 60 is time in ms
+                    //markForDeletion(card.getId(),"n");
+
+                }
+            });
+
             taskCard.setTitle("TASK " + i);
             taskCard.setShadow(true);
             taskCard.setOnClickListener(new OnCardClickListener() {
@@ -173,7 +311,7 @@ public class TasksView extends Fragment {
         mMyCardArrayMultiChoiceAdapter.setEnableUndo(true);
         if (tasksView != null){
 
-            tasksView.setAdapter(mMyCardArrayMultiChoiceAdapter);
+            setBottomRightAdapter(mMyCardArrayMultiChoiceAdapter, tasksView);
             tasksView.setChoiceMode(tasksView.CHOICE_MODE_MULTIPLE_MODAL);
 
         }
@@ -208,6 +346,15 @@ public class TasksView extends Fragment {
 
 
 
+    }
+
+    /**
+     * Bottom-right animation
+     */
+    private void setBottomRightAdapter(MyCardArrayMultiChoiceAdapter adapter, CardListView listView) {
+        AnimationAdapter animCardArrayAdapter = new SwingBottomInAnimationAdapter(new SwingRightInAnimationAdapter(adapter));
+        animCardArrayAdapter.setAbsListView(listView);
+        listView.setExternalAdapter(animCardArrayAdapter, adapter);
     }
 
     @Override

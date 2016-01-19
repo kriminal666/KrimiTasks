@@ -16,6 +16,7 @@
 
 
 
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="importing">Import</string>
@@ -29,9 +30,11 @@
     <string name="drawerSubtitle">kriminalaverno@gmail.com</string>
 
     <!--actionbar titles-->
-    <string name="actionBTodo">Tasks to do</string>
-    <string name="actionBFinish">Tasks finished</string>
-    <string name="actionBAll">All tasks</string>
+    <string name="title_actionBTodo">Tasks to do</string>
+    <string name="title_actionBFinish">Tasks finished</string>
+    <string name="title_actionBAll">All tasks</string>
+    <string name="title_actionBUpdateTask">Update Task</string>
+    <string name="title_actionBCreateTask">Create Task</string>
 
     <!--menu strings-->
      <string name="menu_share">Share</string>

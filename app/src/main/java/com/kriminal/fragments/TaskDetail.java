@@ -33,6 +33,21 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 /**
+ *  * *******************************************************************************
+ * Copyright (c) 2016 kriminal666.
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
+ *  *****************************************************************************
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
  * {@link TaskDetail.OnFragmentInteractionListener} interface
@@ -100,6 +115,28 @@ public class TaskDetail extends Fragment implements View.OnClickListener {
         }
     }
 
+    //Set de Title
+    private void setTitleResourceId() {
+
+        int title = 0;
+
+        switch(action){
+            case Utils.ACTION_UPDATE:
+                title = R.string.title_actionBUpdateTask;
+                break;
+            case Utils.ACTION_INSERT:
+                title = R.string.title_actionBCreateTask;
+                break;
+            default:
+                title = R.string.drawerTitle;
+
+        }
+        getActivity().setTitle(title);
+
+
+    }
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -115,7 +152,7 @@ public class TaskDetail extends Fragment implements View.OnClickListener {
 
         }
         //Change title
-        getActivity().setTitle("Hello");
+        setTitleResourceId();
 
         //Get DAO object
         taskDao = new TasksDAO(getActivity());
