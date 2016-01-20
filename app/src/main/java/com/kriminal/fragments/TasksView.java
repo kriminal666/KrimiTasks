@@ -7,7 +7,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
-import android.preference.PreferenceManager;
+import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -16,20 +16,20 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.os.Vibrator;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
 import com.kriminal.adapter.CardAnimationAdapter;
 import com.kriminal.adapter.MyCardArrayMultiChoiceAdapter;
-import com.kriminal.Helpers.Utils;
+import com.kriminal.database.Task;
+import com.kriminal.database.TasksDAO;
+import com.kriminal.helpers.Utils;
 import com.kriminal.database.SQLiteHelper;
 import com.kriminal.header.CustomCardHeader;
 import com.kriminal.main_activity.R;
 import com.kriminal.preferences.GetPreferences;
-import com.kriminal.settings_activity.SettingsActivity;
 import com.nhaarman.listviewanimations.appearance.AnimationAdapter;
-import com.nhaarman.listviewanimations.appearance.simple.SwingBottomInAnimationAdapter;
-import com.nhaarman.listviewanimations.appearance.simple.SwingRightInAnimationAdapter;
 
 import java.util.ArrayList;
 
@@ -90,9 +90,9 @@ public class TasksView extends Fragment {
     private Vibrator vibe;
 
     //DataBase
-    private ArrayList<String> queryResult = new ArrayList<String>();
-    private SQLiteHelper sqlHelper;
-
+    private ArrayList<Task> queryResult;
+    private TasksDAO taskDAO;
+    private ArrayList<Card> cardList;
 
 
     public TasksView() {
@@ -136,12 +136,45 @@ public class TasksView extends Fragment {
 
         }
 
-        setTitle();
-
         //Get preferences object
         preferences = new GetPreferences(getActivity());
+        //Get database access object
+        taskDAO = new TasksDAO(getActivity());
+
+        setTitle();
+
+        //Set navigation header title and subtitle
+        setNavHeaderTitleAndSubtitle();
+
+        //Card array list
+        if(cardList == null){
+            cardList = new ArrayList<Card>();
+        }
+        //query result
+        if(queryResult == null) {
+            queryResult = new ArrayList<Task>();
+        }
+
 
         updateDisplay();
+
+    }
+
+    /**
+     * Set navigation header title and subtitle
+     */
+    private void setNavHeaderTitleAndSubtitle() {
+
+        String navHeader[] = preferences.navHeaderTitleAndSubtitle();
+       TextView navHeaderTitle = (TextView) getActivity().findViewById(R.id.nav_header_title);
+       TextView navHeaderSubtitle = (TextView) getActivity().findViewById(R.id.nav_header_subtitle);
+
+       if(navHeaderTitle!= null){
+           navHeaderTitle.setText(navHeader[Utils.NAV_HEADER_TITLE]);
+       }
+       if(navHeaderSubtitle!= null){
+           navHeaderSubtitle.setText(navHeader[Utils.NAV_HEADER_SUBTITLE]);
+       }
 
     }
 
@@ -196,20 +229,44 @@ public class TasksView extends Fragment {
             case R.id.todo_tasks:
                 title = R.string.title_actionBTodo;
                 setTitle();
+                //Execute query
+                getTasks(Utils.SELECT_ALL_TODO);
+                //Update list
+                updateDisplay();
                 break;
             case R.id.finished_tasks:
                 title = R.string.title_actionBFinish;
                 setTitle();
+                getTasks(Utils.SELECT_ALL_FINISHED);
+                updateDisplay();
                 break;
             case R.id.all_tasks:
                 title = R.string.title_actionBAll;
                 setTitle();
+                getTasks(Utils.SELECT_ALL_TASKS);
+                //Updatelist
+                updateDisplay();
                 break;
 
         }
 
         return super.onOptionsItemSelected(item);
     }
+
+    /**
+     * Get tasks
+     */
+    private void getTasks(int typeSelect) {
+
+        if(queryResult != null){
+            queryResult.clear();
+        }
+
+        queryResult = taskDAO.select(typeSelect);
+
+
+    }
+
 
 
     /*@Override
@@ -234,11 +291,18 @@ public class TasksView extends Fragment {
 
     //Method to fill cardList
     private void updateDisplay() {
-        //get user prefs
+        //check query result
+       /* if (queryResult == null || queryResult.isEmpty()){
+            Snackbar.make(getView(),R.string.noTasks,Snackbar.LENGTH_LONG).show();
+            return;
 
-        ArrayList<Card> cardList = new ArrayList<Card>();
+        }*/
+        //Clear before fill
+        cardList.clear();
+
         //Get the list view
         CardListView tasksView = (CardListView) getActivity().findViewById(R.id.tasksList);
+
         //Fill 20 example cards
         for (int i = 0; i < 20; i++) {
             Card taskCard = new Card(getActivity());
@@ -333,13 +397,32 @@ public class TasksView extends Fragment {
         }
 
         //Set adapter
-        mMyCardArrayMultiChoiceAdapter = new MyCardArrayMultiChoiceAdapter(getActivity(),cardList);
+        mMyCardArrayMultiChoiceAdapter = new MyCardArrayMultiChoiceAdapter(getActivity(), cardList);
         mMyCardArrayMultiChoiceAdapter.setEnableUndo(true);
         String animation = preferences.cardAnimation();
-        AnimationAdapter animationAdapter = null;
+
+        AnimationAdapter animationAdapter = getAnimationAdapter(tasksView, animation);
+        if (tasksView != null){
+
+            tasksView.setExternalAdapter(animationAdapter,mMyCardArrayMultiChoiceAdapter);
+            tasksView.setChoiceMode(tasksView.CHOICE_MODE_MULTIPLE_MODAL);
+
+        }
+        
+
+    }
+
+    /**
+     * get animation adapter using user prefs
+     * @param tasksView
+     * @param animation
+     * @return
+     */
+    private AnimationAdapter getAnimationAdapter(CardListView tasksView, String animation) {
+        AnimationAdapter animationAdapter;
         switch(animation){
             case Utils.ANIM_ALPHA:
-                animationAdapter =CardAnimationAdapter.setAlphaAdapter(mMyCardArrayMultiChoiceAdapter, tasksView);
+                animationAdapter = CardAnimationAdapter.setAlphaAdapter(mMyCardArrayMultiChoiceAdapter, tasksView);
                 break;
             case Utils.ANIM_LEFT:
                 animationAdapter = CardAnimationAdapter.setLeftAdapter(mMyCardArrayMultiChoiceAdapter, tasksView);
@@ -357,16 +440,9 @@ public class TasksView extends Fragment {
                 animationAdapter = CardAnimationAdapter.setScaleAdapter(mMyCardArrayMultiChoiceAdapter, tasksView);
                 break;
             default:
-                animationAdapter = setBottomRightAdapter(mMyCardArrayMultiChoiceAdapter, tasksView);
+                animationAdapter = CardAnimationAdapter.setBottomRightAdapter(mMyCardArrayMultiChoiceAdapter, tasksView);
         }
-        if (tasksView != null){
-
-            tasksView.setExternalAdapter(animationAdapter,mMyCardArrayMultiChoiceAdapter);
-            tasksView.setChoiceMode(tasksView.CHOICE_MODE_MULTIPLE_MODAL);
-
-        }
-        
-
+        return animationAdapter;
     }
 
     /**
@@ -380,6 +456,8 @@ public class TasksView extends Fragment {
         //Change the fragment
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
+        //set animations
+        transaction.setCustomAnimations(R.anim.enter, R.anim.exit,R.anim.pop_enter,R.anim.pop_exit);
         Fragment   taskDetail = new TaskDetail();
         //transaction.hide(TaskView.this);
 
@@ -398,14 +476,6 @@ public class TasksView extends Fragment {
 
     }
 
-    /**
-     * Bottom-right animation
-     */
-    private AnimationAdapter setBottomRightAdapter(MyCardArrayMultiChoiceAdapter adapter, CardListView listView) {
-        AnimationAdapter animCardArrayAdapter = new SwingBottomInAnimationAdapter(new SwingRightInAnimationAdapter(adapter));
-        animCardArrayAdapter.setAbsListView(listView);
-        return animCardArrayAdapter;
-    }
 
     @Override
     public void onDetach() {

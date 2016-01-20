@@ -25,7 +25,7 @@ import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
 
-import com.kriminal.Helpers.Utils;
+import com.kriminal.helpers.Utils;
 import com.kriminal.fragments.TaskDetail;
 import com.kriminal.fragments.TasksView;
 import com.kriminal.settings_activity.SettingsActivity;
@@ -72,6 +72,7 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -103,6 +104,9 @@ public class MainActivity extends AppCompatActivity
         if (savedInstanceState == null) {
             Log.d(Utils.TAG, "Going to load fragment");
             FragmentTransaction transaction = getFragmentManager().beginTransaction();
+            //set animations
+            transaction.setCustomAnimations(R.anim.enter, R.anim.exit,R.anim.pop_enter, R.anim.pop_exit);
+           // transaction.addToBackStack(null);
             transaction.add(R.id.container, tasksList).commit();
         }
 

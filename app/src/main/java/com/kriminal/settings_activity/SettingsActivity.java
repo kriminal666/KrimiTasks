@@ -21,7 +21,7 @@ import android.text.TextUtils;
 import android.view.MenuItem;
 import android.support.v4.app.NavUtils;
 
-import com.kriminal.Helpers.Utils;
+import com.kriminal.helpers.Utils;
 import com.kriminal.main_activity.R;
 
 import java.util.List;
@@ -211,7 +211,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             // to their values. When their values change, their summaries are
             // updated to reflect the new value, per the Android Design
             // guidelines.
-            bindPreferenceSummaryToValue(findPreference("example_text"));
+            bindPreferenceSummaryToValue(findPreference(Utils.PREF_NAV_HEADER_TITLE));
+            bindPreferenceSummaryToValue(findPreference(Utils.PREF_NAV_HEADER_SUBTITLE));
             bindPreferenceSummaryToValue(findPreference(Utils.PREF_CARD_ANIMATION));
         }
 

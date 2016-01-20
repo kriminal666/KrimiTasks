@@ -6,7 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.kriminal.Helpers.Utils;
+import com.kriminal.helpers.Utils;
 import com.kriminal.main_activity.R;
 
 import it.gmariotti.cardslib.library.internal.CardHeader;

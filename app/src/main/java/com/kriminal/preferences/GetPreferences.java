@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import com.kriminal.Helpers.Utils;
+import com.kriminal.helpers.Utils;
 
 /**
  * Created by Kriminal on 19/01/2016.
@@ -53,7 +53,23 @@ public class GetPreferences {
         return sharedPrefs.getBoolean(Utils.PREF_SWITCH_THUMBNAIL, false);
     }
 
+    /**
+     * Get user selected card animation
+     * @return
+     */
     public String cardAnimation() {
         return sharedPrefs.getString(Utils.PREF_CARD_ANIMATION,"");
     }
+
+    /**
+     * Get nav header title and subtitle
+     * @return String array [0]= title, [1]=subtitle
+     */
+    public String[] navHeaderTitleAndSubtitle(){
+
+        return new String[] {sharedPrefs.getString(Utils.PREF_NAV_HEADER_TITLE,""),
+                             sharedPrefs.getString(Utils.PREF_NAV_HEADER_SUBTITLE,"")};
+
+    }
 }
+

@@ -1,10 +1,7 @@
-package com.kriminal.Helpers;
+package com.kriminal.helpers;
 
 import android.content.Context;
 import android.support.design.widget.TextInputLayout;
-import android.view.ActionMode;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -42,6 +39,8 @@ public class Utils {
     //prefs keys
     public static final String PREF_SWITCH_THUMBNAIL = "switch_card_thumbnail";
     public static final String PREF_CARD_ANIMATION = "card_load_animation_list";
+    public static final String PREF_NAV_HEADER_TITLE = "nav_header_title";
+    public static final String PREF_NAV_HEADER_SUBTITLE = "nav_header_subtitle";
 
     //animation values
     public static final String ANIM_ALPHA = "1001";
@@ -50,6 +49,16 @@ public class Utils {
     public static final String ANIM_BOTTOM = "1004";
     public static final String ANIM_BOTTOM_RIGHT = "1005";
     public static final String ANIM_SCALE= "1006";
+
+    //Database selects
+    public static final int SELECT_ALL_TODO = 0;
+    public static final int SELECT_ALL_FINISHED = -1;
+    public static final int SELECT_ALL_TASKS= -2;
+
+    //Titles
+    public static final int NAV_HEADER_TITLE = 0;
+    public static final int NAV_HEADER_SUBTITLE = 1;
+
 
 
     /**

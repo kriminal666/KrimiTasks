@@ -20,8 +20,8 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.kriminal.Helpers.SetTime;
-import com.kriminal.Helpers.Utils;
+import com.kriminal.helpers.SetTime;
+import com.kriminal.helpers.Utils;
 import com.kriminal.database.Task;
 import com.kriminal.database.TasksDAO;
 import com.kriminal.main_activity.R;

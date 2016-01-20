@@ -90,6 +90,8 @@
     <string name="pref_title_social_recommendations">Habilitar imagen en las tarjetas</string><string name="pref_description_social_recommendations">La tarjeta mostrará diferente imagen
     para las tareas pendientes o finalizadas.</string>
     <string name="pref_card_load_animations_title">Selecciona animación de carga</string>
+    <string name="pref_title_nav_header">Título cabecera de navegación</string>
+    <string name="pref_subtitle_nav_header">Subtítulo cabecera de navegación</string>
     <string-array name="pref_card_load_animations">
         <item>Alpha</item>
         <item>Izquierda</item>
@@ -106,5 +108,7 @@
         <item>1005</item>
         <item>1006</item>
     </string-array>
+    <string name="pref_default_display_title">KrimiTasks</string>
+
 
 </resources>

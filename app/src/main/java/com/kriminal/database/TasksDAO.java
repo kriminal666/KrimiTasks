@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.kriminal.Helpers.Utils;
+import com.kriminal.helpers.Utils;
 import com.kriminal.main_activity.R;
 
 import java.util.ArrayList;
@@ -35,6 +35,8 @@ public class TasksDAO {
     private SQLiteDatabase sqliteDatabase;
     private static final String DATABASE = "DBTasks";
     private static final int VERSION = 1;
+
+
     private Context ctx;
 
 
@@ -49,6 +51,7 @@ public class TasksDAO {
         if (sqlHelper == null){
             try{
                 sqlHelper = new SQLiteHelper(ctx,this.DATABASE,null,this.VERSION);
+
 
             }catch(Exception e){
 
@@ -86,21 +89,24 @@ public class TasksDAO {
         switch (id){
 
             //Select all tasks
-            case 0:
+            case Utils.SELECT_ALL_TODO :
 
                 if (!execSelect(selectAllTodo, result, cursor)) return null;
                 break;
 
             //Select all finished tasks
-            case -1:
+            case Utils.SELECT_ALL_FINISHED:
 
                 if (! execSelect(selectFinished,result,cursor)) return null;
                 break;
-            case -2:
-                if (! execSelect(selectAll,result,cursor));
+            //Select to do + finished
+            case Utils.SELECT_ALL_TASKS:
+                if (! execSelect(selectAll,result,cursor))return null;
+                break;
             //Select one task
             default:
-                if (!execSelect(selectOne,result,cursor,id))return null;
+                int [] arrayId = {id};
+                if (!execSelect(selectOne,result,cursor,arrayId))return null;
 
             }
 
@@ -113,7 +119,10 @@ public class TasksDAO {
     private boolean execSelect(String select, ArrayList<Task> result, Cursor cursor, int ...taskId) {
         Task task;
 
-        int id = taskId[0];
+
+        if(taskId.length != 0) {
+            int id = taskId[0];
+        }
 
         try {
             cursor = sqliteDatabase.rawQuery(select, null);
