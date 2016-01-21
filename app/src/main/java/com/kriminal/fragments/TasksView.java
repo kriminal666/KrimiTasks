@@ -24,6 +24,7 @@ import com.kriminal.adapter.CardAnimationAdapter;
 import com.kriminal.adapter.MyCardArrayMultiChoiceAdapter;
 import com.kriminal.database.Task;
 import com.kriminal.database.TasksDAO;
+import com.kriminal.helpers.PopupDialog;
 import com.kriminal.helpers.Utils;
 import com.kriminal.database.SQLiteHelper;
 import com.kriminal.header.CustomCardHeader;
@@ -68,6 +69,7 @@ public class TasksView extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+
 
     private static Context myContext;
 
@@ -223,10 +225,11 @@ public class TasksView extends Fragment {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
+        vibe.vibrate(60);
         //noinspection SimplifiableIfStatement
         switch (id){
             case R.id.todo_tasks:
+
                 title = R.string.title_actionBTodo;
                 setTitle();
                 //Execute query
@@ -247,6 +250,8 @@ public class TasksView extends Fragment {
                 //Updatelist
                 updateDisplay();
                 break;
+            case R.id.add_new_task:
+                changeFragment(Utils.ACTION_INSERT,Utils.INSERT_ID);
 
         }
 
@@ -292,7 +297,9 @@ public class TasksView extends Fragment {
     //Method to fill cardList
     private void updateDisplay() {
         //check query result
-       /* if (queryResult == null || queryResult.isEmpty()){
+        /*if (queryResult == null || queryResult.isEmpty()){
+
+            //new PopupDialog(getActivity(), R.layout.popup_dialog_1,"ERROR", "");
             Snackbar.make(getView(),R.string.noTasks,Snackbar.LENGTH_LONG).show();
             return;
 
@@ -305,7 +312,7 @@ public class TasksView extends Fragment {
 
         //Fill 20 example cards
         for (int i = 0; i < 20; i++) {
-            Card taskCard = new Card(getActivity());
+            final Card taskCard = new Card(getActivity());
             taskCard.setId(String.valueOf(i));
             CustomCardHeader header = new CustomCardHeader(getActivity());
             Log.d(Utils.TAG,"antes de set inner header");
@@ -356,7 +363,7 @@ public class TasksView extends Fragment {
                 public void onSwipe(Card card) {
                     //we mark for deletion
                     vibe.vibrate(60); // 60 is time in ms
-                    //markForDeletion(card.getId(),"y");
+                    markAsFinished(card.getId(), Utils.YES);
 
                 }
             });
@@ -366,7 +373,7 @@ public class TasksView extends Fragment {
                 public void onUndoSwipe(Card card) {
                     //we undo the mark for deletion
                     vibe.vibrate(60); // 60 is time in ms
-                    //markForDeletion(card.getId(),"n");
+                    markAsFinished(card.getId(), Utils.NO);
 
                 }
             });
@@ -378,7 +385,7 @@ public class TasksView extends Fragment {
                 public void onClick(Card card, View view) {
                     vibe.vibrate(60); // 60 is time in ms
                     //Change the fragment to see detail
-                    changeFragment(Integer.parseInt(card.getId()));
+                    changeFragment(Utils.ACTION_UPDATE,Integer.parseInt(card.getId()));
 
                 }
             });
@@ -410,6 +417,28 @@ public class TasksView extends Fragment {
         }
         
 
+    }
+
+    /**
+     * Finish or undo task
+     * @param id
+     * @param action
+     */
+    private void markAsFinished(String id, String action) {
+
+        switch(action){
+            case Utils.YES:
+                if(taskDAO.taskFinished(Integer.valueOf(id),Utils.getCurrentDate(),Utils.getCurrentTime())){
+                    Toast.makeText(getActivity(), R.string.finished, Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case Utils.NO:
+                if(taskDAO.taskFinished(Integer.valueOf(id),null,null)){
+                    Toast.makeText(getActivity(),R.string.action_canceled,Toast.LENGTH_SHORT).show();
+                }
+                break;
+
+        }
     }
 
     /**
@@ -449,7 +478,7 @@ public class TasksView extends Fragment {
      * Change fragment to show detail
      * @param id
      */
-    private void changeFragment(int id){
+    private void changeFragment(String action,int id){
 
         Log.d(Utils.TAG, "changeFragment");
 
@@ -469,7 +498,7 @@ public class TasksView extends Fragment {
         //Pass the id to the fragment detail
         Bundle extras = new Bundle();
         extras.putInt(Utils.ID,id);
-        extras.putString(Utils.ACTION,Utils.ACTION_UPDATE);
+        extras.putString(Utils.ACTION,action);
         taskDetail.setArguments(extras);
 
 

@@ -6,6 +6,9 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 
 /**
  * Created by Kriminal on 12/01/2016.
@@ -35,6 +38,7 @@ public class Utils {
     public static final String ACTION_UPDATE = "update";
     public static final String ACTION = "action" ;
     public static final String ID = "id";
+    public static final int INSERT_ID = -1 ;
 
     //prefs keys
     public static final String PREF_SWITCH_THUMBNAIL = "switch_card_thumbnail";
@@ -58,6 +62,19 @@ public class Utils {
     //Titles
     public static final int NAV_HEADER_TITLE = 0;
     public static final int NAV_HEADER_SUBTITLE = 1;
+
+    //FormaTS
+    public static final String DATE_FORMAT = "dd/MM/yyyy";
+    public static final String TIME_FORMAT = "HH:mm";
+
+    //miscellanious
+    public static final String YES = "YES";
+    public static final String NO = "NO";
+
+    private static Calendar calendar = Calendar.getInstance();
+
+
+
 
 
 
@@ -110,8 +127,8 @@ public class Utils {
                         layout.setErrorEnabled(false);
                     }
 
-                }else {
-                    disableKeyboard(editText,context);
+                } else {
+                    disableKeyboard(editText, context);
                 }
             }
         });
@@ -127,6 +144,27 @@ public class Utils {
         //Disable keyboard
         InputMethodManager im = (InputMethodManager)ctx.getSystemService(Context.INPUT_METHOD_SERVICE);
         im.hideSoftInputFromWindow(editText.getWindowToken(), 0);
+    }
+
+    /**
+     * Get current date
+     * @return
+     */
+    public static String getCurrentDate(){
+
+        SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
+        return sdf.format(calendar.getTime());
+
+
+    }
+
+    /**
+     * Get current Time
+     * @return
+     */
+    public static final String getCurrentTime(){
+        SimpleDateFormat sdf = new SimpleDateFormat(TIME_FORMAT);
+        return sdf.format(calendar.getTime());
     }
 
 

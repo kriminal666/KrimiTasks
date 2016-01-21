@@ -257,7 +257,7 @@ public class TasksDAO {
     }
 
     /**
-     * Mark task as finished
+     * Mark task as finished or undo
      * @param id
      * @param finish_date
      * @param finish_time
@@ -279,7 +279,6 @@ public class TasksDAO {
             return false;
         }
         //If we don't have exception show message
-        Toast.makeText(this.ctx,R.string.finished,Toast.LENGTH_LONG).show();
         return true;
 
     }

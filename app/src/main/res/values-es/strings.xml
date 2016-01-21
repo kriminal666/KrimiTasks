@@ -31,6 +31,7 @@
     <string name="yes">OK</string>
     <string name="cancel">Cancelar</string>
     <string name="update">Actualizar</string>
+    <string name="action_canceled">Acción cancelada</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Task details</string>

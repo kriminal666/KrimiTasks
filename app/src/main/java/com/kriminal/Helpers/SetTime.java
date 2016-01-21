@@ -2,6 +2,7 @@ package com.kriminal.helpers;
 
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.os.Vibrator;
 import android.support.design.widget.TextInputLayout;
 import android.view.View;
 import android.widget.EditText;
@@ -27,12 +28,13 @@ import java.util.Calendar;
  *   limitations under the License.
  *  *****************************************************************************
  */
-public class SetTime implements View.OnFocusChangeListener, TimePickerDialog.OnTimeSetListener {
+public class SetTime implements View.OnClickListener, TimePickerDialog.OnTimeSetListener {
 
     private EditText editText;
     private Calendar myCalendar;
     private Context context;
     private TextInputLayout inputLayout;
+    private Vibrator vibe;
 
     /**
      * Constructor
@@ -41,19 +43,20 @@ public class SetTime implements View.OnFocusChangeListener, TimePickerDialog.OnT
      * @param context
      * @param inputLayout if not exists send null
      */
-    public SetTime(EditText editText, Context context, TextInputLayout inputLayout){
+    public SetTime(EditText editText, Context context, TextInputLayout inputLayout,Vibrator vibe){
         this.editText = editText;
-        this.editText.setOnFocusChangeListener(this);
+        this.editText.setOnClickListener(this);
         this.myCalendar = Calendar.getInstance();
         this.context = context;
         this.inputLayout = inputLayout;
+        this.vibe = vibe;
 
     }
 
     @Override
-    public void onFocusChange(View v, boolean hasFocus) {
+    public void onClick(View v) {
         // TODO Auto-generated method stub
-        if(hasFocus){
+        vibe.vibrate(60);
             //Disable layout errors
             if(this.inputLayout != null && inputLayout.isErrorEnabled()) {
                 this.inputLayout.setErrorEnabled(false);
@@ -65,12 +68,16 @@ public class SetTime implements View.OnFocusChangeListener, TimePickerDialog.OnT
             int minute = myCalendar.get(Calendar.MINUTE);
             new TimePickerDialog(context, this, hour, minute, true).show();
         }
-    }
+
 
     @Override
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
         // TODO Auto-generated method stub
-        this.editText.setText( hourOfDay + ":" + minute);
+        if(minute <10){
+            this.editText.setText(hourOfDay + ":0" + minute);
+        }else {
+            this.editText.setText(hourOfDay + ":" + minute);
+        }
     }
 
 }

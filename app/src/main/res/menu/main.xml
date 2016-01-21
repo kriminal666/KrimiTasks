@@ -20,6 +20,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <item android:id="@+id/add_new_task"
+        android:icon="@drawable/btn_add_task"
+        android:title="@string/newTask"
+        app:showAsAction="ifRoom"  />
+
     <item
         android:id="@+id/todo_tasks"
         android:orderInCategory="100"
@@ -35,9 +40,5 @@
         android:orderInCategory="100"
         android:title="@string/all_tasks"
         app:showAsAction="never" />
-    <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:title="@string/action_settings"
-        app:showAsAction="never" />
+
 </menu>

@@ -45,7 +45,9 @@
     <color name="greendark">#53933F</color>
     <color name="orangelight">#F3AE1B</color>
     <color name="orangedark">#BB6008</color>
-
     <color name="black_overlay">#66000000</color>
+    <color name="oval_background_center">#D6D6D6</color>
+    <color name="oval_background_default_start">#6586F0</color>
+    <color name="oval_background_default_end">#4B6CD6</color>
 
 </resources>

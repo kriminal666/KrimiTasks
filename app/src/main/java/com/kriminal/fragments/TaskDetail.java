@@ -9,6 +9,8 @@ import android.os.Vibrator;
 import android.support.design.widget.TextInputLayout;
 import android.text.InputType;
 import android.util.Log;
+import android.util.TimeUtils;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -27,7 +29,11 @@ import com.kriminal.database.TasksDAO;
 import com.kriminal.main_activity.R;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.SimpleTimeZone;
+import java.util.TimeZone;
 
 /**
  *  * *******************************************************************************
@@ -79,7 +85,6 @@ public class TaskDetail extends Fragment implements View.OnClickListener {
     private TextInputLayout date_layout;
     private TextInputLayout time_layout;
     private Calendar myCalendar;
-
 
     public TaskDetail() {
         // Required empty public constructor
@@ -168,21 +173,7 @@ public class TaskDetail extends Fragment implements View.OnClickListener {
         btnUpdate = (Button) view.findViewById(R.id.btn_update_task);
         Log.v(Utils.TAG, "before check button");
         if (btnUpdate != null) {
-            switch (action) {
-                case Utils.ACTION_INSERT:
-                    btnUpdate.setText(R.string.save);
-
-                    break;
-                case Utils.ACTION_UPDATE:
-                    btnUpdate.setText(R.string.update);
-                    Calendar c = Calendar.getInstance();
-                    int hour = Calendar.HOUR;
-                    int minute = Calendar.MINUTE;
-                    int sec = Calendar.SECOND;
-                    taskTime.setText(hour + ":" + minute + ":" + sec);
-                    break;
-            }
-
+            updateFields();
             btnUpdate.setOnClickListener(this);
         }
 
@@ -237,14 +228,8 @@ public class TaskDetail extends Fragment implements View.OnClickListener {
             }
         });
 
-
-
-
-
-
-
         //Set timer
-        new SetTime(taskTime, getActivity(), time_layout);
+        new SetTime(taskTime, getActivity(), time_layout,vibe);
 
 
         //Set new menu
@@ -254,11 +239,46 @@ public class TaskDetail extends Fragment implements View.OnClickListener {
 
     }
 
+    /**
+     * Set fields data when updating or going to insert new one
+     */
+    private void updateFields() {
+
+        //When insert
+        if(action.equals(Utils.ACTION_INSERT)){
+            //Set button text
+            btnUpdate.setText(R.string.save);
+
+            //Set date and time fields
+            taskTime.setText(Utils.getCurrentTime());
+            taskDate.setText(Utils.getCurrentDate());
+
+        }else{
+        //When update
+            //Set button text
+            btnUpdate.setText(R.string.save);
+
+            //Get task from database
+            ArrayList<Task> taskList = taskDao.select(task_id);
+            if(taskList==null){
+                Toast.makeText(getActivity(),R.string.noTasks, Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            //Set fields
+            taskTitle.setText(taskList.get(0).getTitle());
+            taskDescription.setText(taskList.get(0).getDescription());
+            taskDate.setText(taskList.get(0).getDate());
+            taskDate.setText(taskList.get(0).getTime());
+
+        }
+
+    }
+
     //Change date in EditText
     private void updateDate() {
 
-        String myFormat = "dd/MM/yyyy"; //In which you need put here
-        SimpleDateFormat sdf = new SimpleDateFormat(myFormat);
+        SimpleDateFormat sdf = new SimpleDateFormat(Utils.DATE_FORMAT);
         taskDate.setText(sdf.format(myCalendar.getTime()));
 
     }
@@ -328,6 +348,7 @@ public class TaskDetail extends Fragment implements View.OnClickListener {
             case Utils.ACTION_INSERT:
                 if (taskDao.insertTask(task)) {
                     Toast.makeText(getActivity(), R.string.inserted, Toast.LENGTH_SHORT).show();
+                    goBack();
                 } else {
                     return;
                 }
@@ -335,6 +356,7 @@ public class TaskDetail extends Fragment implements View.OnClickListener {
             case Utils.ACTION_UPDATE:
                 if (taskDao.updateTask(task)) {
                     Toast.makeText(getActivity(), R.string.updated, Toast.LENGTH_SHORT).show();
+                    goBack();
                 } else {
                     return;
                 }
@@ -345,6 +367,14 @@ public class TaskDetail extends Fragment implements View.OnClickListener {
 
     }
 
+    /**
+     * Go back
+     */
+    private void goBack(){
+        getActivity().dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_BACK));
+        getActivity().dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_BACK));
+    }
+
     //set task values
     private Task setTask() {
 
@@ -352,6 +382,11 @@ public class TaskDetail extends Fragment implements View.OnClickListener {
         if (!checkTaskValues()) return null;
 
         Task task = new Task();
+
+        if (action.equals(Utils.ACTION_UPDATE)){
+
+            task.setId(task_id);
+        }
         task.setTitle(taskTitle.getText().toString());
         task.setDescription(taskDescription.getText().toString());
         task.setDate(taskDate.getText().toString());
