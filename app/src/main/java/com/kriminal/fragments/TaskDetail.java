@@ -269,7 +269,7 @@ public class TaskDetail extends Fragment implements View.OnClickListener {
             taskTitle.setText(taskList.get(0).getTitle());
             taskDescription.setText(taskList.get(0).getDescription());
             taskDate.setText(taskList.get(0).getDate());
-            taskDate.setText(taskList.get(0).getTime());
+            taskTime.setText(taskList.get(0).getTime());
 
         }
 
@@ -371,8 +371,7 @@ public class TaskDetail extends Fragment implements View.OnClickListener {
      * Go back
      */
     private void goBack(){
-        getActivity().dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_BACK));
-        getActivity().dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_BACK));
+        getActivity().onBackPressed();
     }
 
     //set task values

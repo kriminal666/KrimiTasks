@@ -20,25 +20,34 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:id="@+id/add_new_task"
-        android:icon="@drawable/btn_add_task"
-        android:title="@string/newTask"
-        app:showAsAction="ifRoom"  />
 
-    <item
-        android:id="@+id/todo_tasks"
-        android:orderInCategory="100"
-        android:title="@string/todo_tasks"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/finished_tasks"
-        android:orderInCategory="100"
-        android:title="@string/finished_tasks"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/all_tasks"
-        android:orderInCategory="100"
-        android:title="@string/all_tasks"
-        app:showAsAction="never" />
+
+
+        <item android:id="@+id/add_new_task"
+            android:icon="@drawable/action_add"
+            android:title="@string/newTask"
+            app:showAsAction="ifRoom"  />
+
+
+        <item
+            android:id="@+id/todo_tasks"
+            android:orderInCategory="100"
+            android:title="@string/todo_tasks"
+            app:showAsAction="never" />
+
+
+
+        <item
+            android:id="@+id/finished_tasks"
+            android:orderInCategory="100"
+            android:title="@string/finished_tasks"
+            app:showAsAction="never" />
+
+
+        <item
+            android:id="@+id/all_tasks"
+            android:orderInCategory="100"
+            android:title="@string/all_tasks"
+            app:showAsAction="never" />
 
 </menu>

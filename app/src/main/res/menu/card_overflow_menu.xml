@@ -17,14 +17,27 @@
 
     -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:app="http://schemas.android.com/apk/res-auto">
-<item
-    android:id="@+id/updateTaskMenu"
-    app:showAsAction="never"
-    android:title="@string/update"/>
-<item
-    android:id="@+id/deleteTaskMenu"
-    android:icon="@android:drawable/ic_menu_delete"
-    app:showAsAction="never"
-    android:title="@string/delete"/>
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+    <group
+        android:id="@+id/card_overflow_1">
+
+        <item
+            android:id="@+id/updateTaskMenu"
+            app:showAsAction="never"
+            android:title="@string/update"/>
+
+
+    </group>
+
+    <group
+        android:id="@+id/card_overflow_2">
+
+        <item
+            android:id="@+id/deleteTaskMenu"
+            app:showAsAction="never"
+            android:title="@string/delete"/>
+
+    </group>
+
+
 </menu>

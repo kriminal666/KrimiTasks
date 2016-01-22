@@ -25,7 +25,8 @@
     <string name="action_settings">Opciones</string>
     <string name="newTask">Nueva tarea</string>
     <string name="save">Guardar</string>
-    <string name="delete">Borrar</string>
+    <string name="delete">ELIMINAR</string>
+    <string name="delete_question">¿Estás segur@ de eliminar la tarea?</string>
     <string name="showFinished">Mostrar finalizadas</string>
     <string name="DeleteAdvise">¿Borrar definitivamente la tarea?</string>
     <string name="yes">OK</string>
@@ -110,6 +111,9 @@
         <item>1006</item>
     </string-array>
     <string name="pref_default_display_title">KrimiTasks</string>
+    <string name="pref_description_card_swipe">Deslizar la tarjeta para marcarla como finalizada. en su defecto se utilizará
+                    un click largo.</string>
+    <string name="pref_title_card_swipe">Activar deslizamiento lateral</string>
 
 
 </resources>

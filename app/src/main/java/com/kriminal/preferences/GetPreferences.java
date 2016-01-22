@@ -71,5 +71,13 @@ public class GetPreferences {
                              sharedPrefs.getString(Utils.PREF_NAV_HEADER_SUBTITLE,"")};
 
     }
+
+    /**
+     * Get if user wants swipe cards
+     * @return
+     */
+    public boolean cardSwipe(){
+        return sharedPrefs.getBoolean(Utils.PREF_SWITCH_CARD_SWIPE,false);
+    }
 }
 

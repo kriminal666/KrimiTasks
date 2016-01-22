@@ -5,6 +5,10 @@ import android.support.design.widget.TextInputLayout;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.Toast;
+
+import com.kriminal.database.TasksDAO;
+import com.kriminal.main_activity.R;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -45,6 +49,8 @@ public class Utils {
     public static final String PREF_CARD_ANIMATION = "card_load_animation_list";
     public static final String PREF_NAV_HEADER_TITLE = "nav_header_title";
     public static final String PREF_NAV_HEADER_SUBTITLE = "nav_header_subtitle";
+    public static final String PREF_SWITCH_CARD_SWIPE = "switch_card_swipe";
+
 
     //animation values
     public static final String ANIM_ALPHA = "1001";
@@ -162,7 +168,7 @@ public class Utils {
      * Get current Time
      * @return
      */
-    public static final String getCurrentTime(){
+    public static String getCurrentTime(){
         SimpleDateFormat sdf = new SimpleDateFormat(TIME_FORMAT);
         return sdf.format(calendar.getTime());
     }

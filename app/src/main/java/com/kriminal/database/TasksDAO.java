@@ -39,6 +39,8 @@ public class TasksDAO {
 
     private Context ctx;
 
+    private String[] columns = {"id","title","description","date","time","finish_date","finish_time"};
+
 
 
 
@@ -78,9 +80,11 @@ public class TasksDAO {
 
         //Open to read
         sqliteDatabase = sqlHelper.getReadableDatabase();
-        String selectAllTodo ="select * from tasks where finish_date = null and finish_time = null order by date, time asc";
+        Toast.makeText(ctx, "Select Method", Toast.LENGTH_SHORT).show();
+        Toast.makeText(ctx,sqliteDatabase.toString(),Toast.LENGTH_LONG).show();
+        String selectAllTodo ="select * from tasks where finish_date is null and finish_time is null order by date, time asc";
         String selectOne = "select * from tasks where id ="+id;
-        String selectFinished ="select * from tasks where finish_time is not null and finish_time is not null order by finish_date,finish_time";
+        String selectFinished ="select * from tasks where finish_date is not null and finish_time is not null order by finish_date,finish_time";
         String selectAll = "select * from tasks";
         ArrayList<Task> result = new ArrayList<Task>();
         Task task;
@@ -110,6 +114,8 @@ public class TasksDAO {
 
             }
 
+        Toast.makeText(ctx,"date: "+result.get(0).getDescription(), Toast.LENGTH_SHORT).show();
+
             return result;
 
 
@@ -124,6 +130,7 @@ public class TasksDAO {
             int id = taskId[0];
         }
 
+        sqliteDatabase.query("tasks", columns,"finish_date=null and finish_time=null",null,null,null,null);
         try {
             cursor = sqliteDatabase.rawQuery(select, null);
         }catch(Exception e){

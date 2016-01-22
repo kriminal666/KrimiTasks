@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.kriminal.fragments.TasksView;
+import com.kriminal.helpers.Utils;
 import com.kriminal.main_activity.R;
 
 import java.util.ArrayList;
@@ -42,12 +43,14 @@ import it.gmariotti.cardslib.library.view.base.CardViewWrapper;
 public class MyCardArrayMultiChoiceAdapter extends CardArrayMultiChoiceAdapter {
 
     private Vibrator vibe;
+    private Context ctx;
 
 
 
     public MyCardArrayMultiChoiceAdapter(Context context, List<Card> cards) {
         super(context, cards);
         vibe = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE) ;
+        this.ctx = context;
 
     }
     @Override
@@ -66,10 +69,10 @@ public class MyCardArrayMultiChoiceAdapter extends CardArrayMultiChoiceAdapter {
     }
     @Override
     public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-        if (item.getItemId() == R.id.menu_share) {
+        /*if (item.getItemId() == R.id.menu_share) {
             Toast.makeText(getContext(), "Share;" + formatCheckedCard(), Toast.LENGTH_SHORT).show();
             return true;
-        }
+        }*/
         if (item.getItemId() == R.id.menu_discard) {
             vibe.vibrate(60); // 60 is time in ms
             discardSelectedItems(mode);
@@ -81,7 +84,7 @@ public class MyCardArrayMultiChoiceAdapter extends CardArrayMultiChoiceAdapter {
         ArrayList<Card> items = getSelectedCards();
         for (Card item : items) {
          //We call mark as finished method and we delete the card from array
-            TasksView.markFinished(Integer.parseInt(item.getId()));
+            TasksView.finishTask(item.getId(),Utils.YES,ctx);
             remove(item);
         }
         mode.finish();
