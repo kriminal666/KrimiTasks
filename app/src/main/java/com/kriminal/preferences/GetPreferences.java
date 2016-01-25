@@ -79,5 +79,13 @@ public class GetPreferences {
     public boolean cardSwipe(){
         return sharedPrefs.getBoolean(Utils.PREF_SWITCH_CARD_SWIPE,false);
     }
+
+    /**
+     * Get user prefs for buttons vibration
+     * @return
+     */
+    public boolean buttonsVibration(){
+        return sharedPrefs.getBoolean(Utils.PREF_SWITCH_APP_VIBRATION,false);
+    }
 }
 

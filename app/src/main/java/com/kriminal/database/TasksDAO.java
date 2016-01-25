@@ -41,7 +41,7 @@ public class TasksDAO {
 
     private String[] columns = {"id","title","description","date","time","finish_date","finish_time"};
 
-
+    private ArrayList<Task> result;
 
 
     //Constructor
@@ -57,11 +57,14 @@ public class TasksDAO {
 
             }catch(Exception e){
 
-                Log.d(Utils.TAG,e.getLocalizedMessage());
+                Toast.makeText(ctx, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
 
             }
 
         }
+
+        result = new ArrayList<Task>();
+
 
     }
 
@@ -80,41 +83,35 @@ public class TasksDAO {
 
         //Open to read
         sqliteDatabase = sqlHelper.getReadableDatabase();
-        Toast.makeText(ctx, "Select Method", Toast.LENGTH_SHORT).show();
-        Toast.makeText(ctx,sqliteDatabase.toString(),Toast.LENGTH_LONG).show();
-        String selectAllTodo ="select * from tasks where finish_date is null and finish_time is null order by date, time asc";
+        String selectAllTodo ="select * from tasks where finish_date is NULL and finish_time is NULL order by date, time desc";
         String selectOne = "select * from tasks where id ="+id;
-        String selectFinished ="select * from tasks where finish_date is not null and finish_time is not null order by finish_date,finish_time";
+        String selectFinished ="select * from tasks where finish_date not NULL or finish_time not NULL order by finish_date,finish_time desc";
         String selectAll = "select * from tasks";
-        ArrayList<Task> result = new ArrayList<Task>();
-        Task task;
-        Cursor cursor=null;
+
 
         switch (id){
 
             //Select all tasks
             case Utils.SELECT_ALL_TODO :
 
-                if (!execSelect(selectAllTodo, result, cursor)) return null;
+                if (!execSelect(selectAllTodo)) return null;
                 break;
 
             //Select all finished tasks
             case Utils.SELECT_ALL_FINISHED:
 
-                if (! execSelect(selectFinished,result,cursor)) return null;
+                if (! execSelect(selectFinished)) return null;
                 break;
             //Select to do + finished
             case Utils.SELECT_ALL_TASKS:
-                if (! execSelect(selectAll,result,cursor))return null;
+                if (! execSelect(selectAll))return null;
                 break;
             //Select one task
             default:
                 int [] arrayId = {id};
-                if (!execSelect(selectOne,result,cursor,arrayId))return null;
+                if (!execSelect(selectOne,arrayId))return null;
 
             }
-
-        Toast.makeText(ctx,"date: "+result.get(0).getDescription(), Toast.LENGTH_SHORT).show();
 
             return result;
 
@@ -122,40 +119,49 @@ public class TasksDAO {
         }
 
     //Execute Select query
-    private boolean execSelect(String select, ArrayList<Task> result, Cursor cursor, int ...taskId) {
-        Task task;
+    private boolean execSelect(String select, int ...taskId) {
+        Cursor cursor = null;
+
+        if(result == null){
+            result = new ArrayList<>();
+        }
+        if (!result.isEmpty()){
+
+            result.clear();
+        }
 
 
         if(taskId.length != 0) {
             int id = taskId[0];
         }
 
-        sqliteDatabase.query("tasks", columns,"finish_date=null and finish_time=null",null,null,null,null);
+        //sqliteDatabase.query("tasks", columns,"finish_date=null and finish_time=null",null,null,null,null);
         try {
+            Log.d(Utils.TAG,select);
             cursor = sqliteDatabase.rawQuery(select, null);
+
         }catch(Exception e){
             Toast.makeText(ctx, e.getMessage(), Toast.LENGTH_LONG).show();
+            return false;
         }
 
         //Check if we have rows
         if (cursor.getCount()==0){
 
-            Toast.makeText(ctx, R.string.noTasks,Toast.LENGTH_SHORT).show();
             sqliteDatabase.close();
 
             return false;
         }
         //Move to first row
         cursor.moveToFirst();
-        task = new Task();
         //get data from cursor to array list
         do
         {
 
-          setTask(task,cursor);
           //Add task to array
 
-            result.add(task);
+            result.add(setTask(cursor));
+
 
         } while(cursor.moveToNext());
         sqliteDatabase.close();
@@ -165,13 +171,13 @@ public class TasksDAO {
 
     /**
      * Set Task object with database value
-     * @param task
      * @param cursor
      * @return
      */
 
-    private Task setTask (Task task, Cursor cursor){
+    private Task setTask (Cursor cursor){
 
+        Task task = new Task();
         task.setId(cursor.getInt(0));
         task.setTitle(cursor.getString(1));
         task.setDescription(cursor.getString(2));
@@ -189,6 +195,7 @@ public class TasksDAO {
      * @return boolean
      */
     public boolean insertTask(Task task){
+        Toast.makeText(ctx, "InsertTask", Toast.LENGTH_SHORT).show();
         String title;
         String description;
         String date;
@@ -255,7 +262,7 @@ public class TasksDAO {
             sqliteDatabase.close();
         }catch(Exception e){
             Toast.makeText(this.ctx,e.getMessage(),Toast.LENGTH_LONG).show();
-            Log.d(Utils.TAG, update + "\n" + e.getMessage());
+            Log.e(Utils.TAG, update + "\n" + e.getMessage());
             return false;
         }
         //If we don't have exception
@@ -282,7 +289,7 @@ public class TasksDAO {
             sqliteDatabase.close();
         }catch(Exception e){
             Toast.makeText(this.ctx,e.getMessage(),Toast.LENGTH_LONG).show();
-            Log.d(Utils.TAG, update + "\n" + e.getMessage());
+            Log.e(Utils.TAG, update + "\n" + e.getMessage());
             return false;
         }
         //If we don't have exception show message

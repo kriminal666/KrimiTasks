@@ -2,6 +2,7 @@ package com.kriminal.helpers;
 
 import android.content.Context;
 import android.support.design.widget.TextInputLayout;
+import android.text.InputType;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -35,14 +36,15 @@ import java.util.Calendar;
 public class Utils {
 
     public static final String TAG = "TAG";
-    public static final String SELECT_ALL ="select_all";
-    public static final String SELECT_ONE = "select_one";
-    public static final String SELECT_FINISH = "select_finish";
+    public static final String SELECTED_ALL_TODO ="select_all_todo";
+    public static final String SELECTED_ALL_FINISHED = "select_all_finished";
+    public static final String SELECTED_ALL= "select_all";
     public static final String ACTION_INSERT = "insert";
     public static final String ACTION_UPDATE = "update";
     public static final String ACTION = "action" ;
     public static final String ID = "id";
     public static final int INSERT_ID = -1 ;
+    public static final String TYPE_OF_LIST_SHOWING = "type_of_list_showing";
 
     //prefs keys
     public static final String PREF_SWITCH_THUMBNAIL = "switch_card_thumbnail";
@@ -50,6 +52,7 @@ public class Utils {
     public static final String PREF_NAV_HEADER_TITLE = "nav_header_title";
     public static final String PREF_NAV_HEADER_SUBTITLE = "nav_header_subtitle";
     public static final String PREF_SWITCH_CARD_SWIPE = "switch_card_swipe";
+    public static final String PREF_SWITCH_APP_VIBRATION = "switch_app_vibration";
 
 
     //animation values
@@ -148,6 +151,7 @@ public class Utils {
      */
     public static void disableKeyboard(EditText editText, Context ctx){
         //Disable keyboard
+        editText.setInputType(InputType.TYPE_NULL);
         InputMethodManager im = (InputMethodManager)ctx.getSystemService(Context.INPUT_METHOD_SERVICE);
         im.hideSoftInputFromWindow(editText.getWindowToken(), 0);
     }

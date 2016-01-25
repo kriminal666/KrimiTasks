@@ -3,14 +3,13 @@ package com.kriminal.fragments;
 import android.app.DatePickerDialog;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.support.design.widget.TextInputLayout;
 import android.text.InputType;
 import android.util.Log;
-import android.util.TimeUtils;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -22,6 +21,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.kriminal.database.DatabaseChangedReceiver;
 import com.kriminal.helpers.SetTime;
 import com.kriminal.helpers.Utils;
 import com.kriminal.database.Task;
@@ -31,9 +31,6 @@ import com.kriminal.main_activity.R;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.SimpleTimeZone;
-import java.util.TimeZone;
 
 /**
  *  * *******************************************************************************
@@ -71,20 +68,21 @@ public class TaskDetail extends Fragment implements View.OnClickListener {
     private OnFragmentInteractionListener mListener;
 
     //Controls
-    private EditText taskTitle;
-    private EditText taskDescription;
-    private EditText taskDate;
-    private EditText taskTime;
-    private Button btnUpdate;
-    private Vibrator vibe;
-    private TasksDAO taskDao;
-    private String action;
-    private int task_id;
-    private TextInputLayout title_layout;
-    private TextInputLayout description_layout;
-    private TextInputLayout date_layout;
-    private TextInputLayout time_layout;
+    private EditText mTaskTitle;
+    private EditText mTaskDescription;
+    private EditText mTaskDate;
+    private EditText mTaskTime;
+    private Button mBtnUpdate;
+    private Vibrator mVibe;
+    private TasksDAO mTaskDao;
+    private String mAction;
+    private int mTask_id;
+    private TextInputLayout mTitle_layout;
+    private TextInputLayout mDescription_layout;
+    private TextInputLayout mDate_layout;
+    private TextInputLayout mTime_layout;
     private Calendar myCalendar;
+
 
     public TaskDetail() {
         // Required empty public constructor
@@ -122,7 +120,7 @@ public class TaskDetail extends Fragment implements View.OnClickListener {
 
         int title = 0;
 
-        switch(action){
+        switch(mAction){
             case Utils.ACTION_UPDATE:
                 title = R.string.title_actionBUpdateTask;
                 break;
@@ -149,46 +147,45 @@ public class TaskDetail extends Fragment implements View.OnClickListener {
         Bundle extras = getArguments();
 
         if (extras != null) {
-            action = extras.getString(Utils.ACTION);
-            task_id = extras.getInt(Utils.ID);
-
+            mAction = extras.getString(Utils.ACTION);
+            mTask_id = extras.getInt(Utils.ID);
         }
         //Change title
         setTitleResourceId();
 
         //Get DAO object
-        taskDao = new TasksDAO(getActivity());
+        mTaskDao = new TasksDAO(getActivity());
         //Vibrator
-        vibe = (Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE);
+        mVibe = (Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE);
 
         //Get controls
-        title_layout = (TextInputLayout) view.findViewById(R.id.title_text_input_layout);
-        description_layout = (TextInputLayout) view.findViewById(R.id.description_text_input_layout);
-        date_layout = (TextInputLayout) view.findViewById(R.id.date_text_input_layout);
-        time_layout = (TextInputLayout) view.findViewById(R.id.time_text_input_layout);
-        taskTitle = (EditText) view.findViewById(R.id.task_title);
-        taskDescription = (EditText) view.findViewById(R.id.task_description);
-        taskDate = (EditText) view.findViewById(R.id.task_date);
-        taskTime = (EditText) view.findViewById(R.id.task_time);
-        btnUpdate = (Button) view.findViewById(R.id.btn_update_task);
-        Log.v(Utils.TAG, "before check button");
-        if (btnUpdate != null) {
+        mTitle_layout = (TextInputLayout) view.findViewById(R.id.title_text_input_layout);
+        mDescription_layout = (TextInputLayout) view.findViewById(R.id.description_text_input_layout);
+        mDate_layout = (TextInputLayout) view.findViewById(R.id.date_text_input_layout);
+        mTime_layout = (TextInputLayout) view.findViewById(R.id.time_text_input_layout);
+        mTaskTitle = (EditText) view.findViewById(R.id.task_title);
+        mTaskDescription = (EditText) view.findViewById(R.id.task_description);
+        mTaskDate = (EditText) view.findViewById(R.id.task_date);
+        mTaskTime = (EditText) view.findViewById(R.id.task_time);
+        mBtnUpdate = (Button) view.findViewById(R.id.btn_update_task);
+        Log.d(Utils.TAG, "before check button");
+        if (mBtnUpdate != null) {
             updateFields();
-            btnUpdate.setOnClickListener(this);
+            mBtnUpdate.setOnClickListener(this);
         }
 
         //disable layout errors
-        Utils.disableInputAdvise(title_layout, taskTitle,getActivity());
-        Utils.disableInputAdvise(description_layout, taskDescription,getActivity());
+        Utils.disableInputAdvise(mTitle_layout, mTaskTitle,getActivity());
+        Utils.disableInputAdvise(mDescription_layout, mTaskDescription,getActivity());
 
 
         //Disable copy paste
         //Disable Keyboard
-        taskDate.setInputType(InputType.TYPE_NULL);
+        mTaskDate.setInputType(InputType.TYPE_NULL);
         InputMethodManager im = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        im.hideSoftInputFromWindow(taskDate.getWindowToken(), 0);
-        taskTime.setInputType(InputType.TYPE_NULL);
-        im.hideSoftInputFromWindow(taskTime.getWindowToken(), 0);
+        im.hideSoftInputFromWindow(mTaskDate.getWindowToken(), 0);
+        mTaskTime.setInputType(InputType.TYPE_NULL);
+        im.hideSoftInputFromWindow(mTaskTime.getWindowToken(), 0);
 
 
         //set calendar
@@ -207,18 +204,18 @@ public class TaskDetail extends Fragment implements View.OnClickListener {
         };
 
 
-        taskDate.setOnClickListener(new View.OnClickListener() {
+        mTaskDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                vibe.vibrate(60);
+                mVibe.vibrate(60);
 
 
-                //Utils.disableKeyboard(taskDate, getActivity());
+                Utils.disableKeyboard(mTaskDate, getActivity());
                 Toast.makeText(getActivity(), "click", Toast.LENGTH_SHORT).show();
 
                 //Disable layout errors if enabled
-                if (date_layout.isErrorEnabled()) {
-                    date_layout.setErrorEnabled(false);
+                if (mDate_layout.isErrorEnabled()) {
+                    mDate_layout.setErrorEnabled(false);
                 }
 
                 new DatePickerDialog(getActivity(), date, myCalendar
@@ -229,7 +226,7 @@ public class TaskDetail extends Fragment implements View.OnClickListener {
         });
 
         //Set timer
-        new SetTime(taskTime, getActivity(), time_layout,vibe);
+        new SetTime(mTaskTime, getActivity(), mTime_layout, mVibe);
 
 
         //Set new menu
@@ -245,31 +242,31 @@ public class TaskDetail extends Fragment implements View.OnClickListener {
     private void updateFields() {
 
         //When insert
-        if(action.equals(Utils.ACTION_INSERT)){
+        if(mAction.equals(Utils.ACTION_INSERT)){
             //Set button text
-            btnUpdate.setText(R.string.save);
+            mBtnUpdate.setText(R.string.save);
 
             //Set date and time fields
-            taskTime.setText(Utils.getCurrentTime());
-            taskDate.setText(Utils.getCurrentDate());
+            mTaskTime.setText(Utils.getCurrentTime());
+            mTaskDate.setText(Utils.getCurrentDate());
 
         }else{
         //When update
             //Set button text
-            btnUpdate.setText(R.string.save);
+            mBtnUpdate.setText(R.string.save);
 
             //Get task from database
-            ArrayList<Task> taskList = taskDao.select(task_id);
+            ArrayList<Task> taskList = mTaskDao.select(mTask_id);
             if(taskList==null){
                 Toast.makeText(getActivity(),R.string.noTasks, Toast.LENGTH_SHORT).show();
                 return;
             }
 
             //Set fields
-            taskTitle.setText(taskList.get(0).getTitle());
-            taskDescription.setText(taskList.get(0).getDescription());
-            taskDate.setText(taskList.get(0).getDate());
-            taskTime.setText(taskList.get(0).getTime());
+            mTaskTitle.setText(taskList.get(0).getTitle());
+            mTaskDescription.setText(taskList.get(0).getDescription());
+            mTaskDate.setText(taskList.get(0).getDate());
+            mTaskTime.setText(taskList.get(0).getTime());
 
         }
 
@@ -279,7 +276,7 @@ public class TaskDetail extends Fragment implements View.OnClickListener {
     private void updateDate() {
 
         SimpleDateFormat sdf = new SimpleDateFormat(Utils.DATE_FORMAT);
-        taskDate.setText(sdf.format(myCalendar.getTime()));
+        mTaskDate.setText(sdf.format(myCalendar.getTime()));
 
     }
 
@@ -309,7 +306,7 @@ public class TaskDetail extends Fragment implements View.OnClickListener {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
         }
-        Log.v(Utils.TAG, "onAttach");
+        Log.d(Utils.TAG, "onAttach");
 
     }
 
@@ -322,9 +319,9 @@ public class TaskDetail extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
-        Log.v(Utils.TAG, "Onclick");
+        Log.d(Utils.TAG, "Onclick");
         //Vibrate on click
-        vibe.vibrate(60); // 60 is time in ms
+        mVibe.vibrate(60); // 60 is time in ms
         //Get Button
         switch (v.getId()) {
             case R.id.btn_update_task:
@@ -344,9 +341,9 @@ public class TaskDetail extends Fragment implements View.OnClickListener {
 
         if (task == null) return;
 
-        switch (action) {
+        switch (mAction) {
             case Utils.ACTION_INSERT:
-                if (taskDao.insertTask(task)) {
+                if (mTaskDao.insertTask(task)) {
                     Toast.makeText(getActivity(), R.string.inserted, Toast.LENGTH_SHORT).show();
                     goBack();
                 } else {
@@ -354,7 +351,7 @@ public class TaskDetail extends Fragment implements View.OnClickListener {
                 }
                 break;
             case Utils.ACTION_UPDATE:
-                if (taskDao.updateTask(task)) {
+                if (mTaskDao.updateTask(task)) {
                     Toast.makeText(getActivity(), R.string.updated, Toast.LENGTH_SHORT).show();
                     goBack();
                 } else {
@@ -382,14 +379,14 @@ public class TaskDetail extends Fragment implements View.OnClickListener {
 
         Task task = new Task();
 
-        if (action.equals(Utils.ACTION_UPDATE)){
+        if (mAction.equals(Utils.ACTION_UPDATE)){
 
-            task.setId(task_id);
+            task.setId(mTask_id);
         }
-        task.setTitle(taskTitle.getText().toString());
-        task.setDescription(taskDescription.getText().toString());
-        task.setDate(taskDate.getText().toString());
-        task.setTime(taskTime.getText().toString());
+        task.setTitle(mTaskTitle.getText().toString());
+        task.setDescription(mTaskDescription.getText().toString());
+        task.setDate(mTaskDate.getText().toString());
+        task.setTime(mTaskTime.getText().toString());
 
         return task;
     }
@@ -397,30 +394,30 @@ public class TaskDetail extends Fragment implements View.OnClickListener {
     //Check if fields are not empty
     private boolean checkTaskValues() {
 
-        if (Utils.isEmptyEditText(taskTitle)) {
+        if (Utils.isEmptyEditText(mTaskTitle)) {
 
-            Utils.setInputAdvise(taskTitle, title_layout, getResources().getString(R.string.input_error_Title));
-
-            return false;
-        }
-
-        if (Utils.isEmptyEditText(taskDescription)) {
-
-            Utils.setInputAdvise(taskDescription, description_layout, getResources().getString(R.string.input_errorDescription));
+            Utils.setInputAdvise(mTaskTitle, mTitle_layout, getResources().getString(R.string.input_error_Title));
 
             return false;
         }
 
-        if (Utils.isEmptyEditText(taskDate)) {
+        if (Utils.isEmptyEditText(mTaskDescription)) {
 
-            Utils.setInputAdvise(taskDate, date_layout, getResources().getString(R.string.input_error_date));
+            Utils.setInputAdvise(mTaskDescription, mDescription_layout, getResources().getString(R.string.input_errorDescription));
 
             return false;
         }
 
-        if (Utils.isEmptyEditText(taskTime)) {
+        if (Utils.isEmptyEditText(mTaskDate)) {
 
-            Utils.setInputAdvise(taskTime, time_layout, getResources().getString(R.string.input_error_Time));
+            Utils.setInputAdvise(mTaskDate, mDate_layout, getResources().getString(R.string.input_error_date));
+
+            return false;
+        }
+
+        if (Utils.isEmptyEditText(mTaskTime)) {
+
+            Utils.setInputAdvise(mTaskTime, mTime_layout, getResources().getString(R.string.input_error_Time));
 
             return false;
         }

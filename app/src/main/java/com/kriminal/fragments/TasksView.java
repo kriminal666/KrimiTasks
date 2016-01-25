@@ -6,6 +6,7 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Vibrator;
@@ -18,11 +19,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.kriminal.adapter.CardAnimationAdapter;
 import com.kriminal.adapter.MyCardArrayMultiChoiceAdapter;
+import com.kriminal.database.DatabaseChangedReceiver;
 import com.kriminal.database.Task;
 import com.kriminal.database.TasksDAO;
 import com.kriminal.header.CustomCardHeader;
@@ -36,6 +39,7 @@ import java.util.ArrayList;
 
 import it.gmariotti.cardslib.library.internal.Card;
 import it.gmariotti.cardslib.library.internal.Card.OnCardClickListener;
+import it.gmariotti.cardslib.library.internal.CardArrayAdapter;
 import it.gmariotti.cardslib.library.internal.CardHeader;
 import it.gmariotti.cardslib.library.internal.CardThumbnail;
 import it.gmariotti.cardslib.library.internal.base.BaseCard;
@@ -70,9 +74,6 @@ public class TasksView extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-
-    private static Context myContext;
-
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -80,21 +81,28 @@ public class TasksView extends Fragment {
     private OnFragmentInteractionListener mListener;
 
     //Title
-    private int title = -1;
+    private int mTitle = -1;
 
-    //Shared preferences
-    private GetPreferences preferences;
+    //Shared mPreferences
+    private GetPreferences mPreferences;
 
 
 
     //CARDS
     private MyCardArrayMultiChoiceAdapter mMyCardArrayMultiChoiceAdapter;
-    private Vibrator vibe;
+    private Vibrator mVibe;
 
     //DataBase
-    private ArrayList<Task> queryResult;
-    private static TasksDAO taskDAO;
-    private ArrayList<Card> cardList;
+    private ArrayList<Task> mQueryResult;
+    private static TasksDAO mTaskDAO;
+    private ArrayList<Card> mCardList;
+
+    //Database changed receiver
+    private DatabaseChangedReceiver mReceiver;
+    private String mTypeOfListShowing;
+
+    //Vibrations prefs
+    private boolean prefVibration;
 
 
     public TasksView() {
@@ -131,47 +139,68 @@ public class TasksView extends Fragment {
     @Override
     public  void onStart(){
         super.onStart();
-        vibe = (Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE) ;
-        if(title ==-1) {
 
-            title = R.string.title_actionBTodo;
+        Toast.makeText(getActivity(), "onStart", Toast.LENGTH_SHORT).show();
+        mVibe = (Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE) ;
+        if(mTitle ==-1) {
+
+            mTypeOfListShowing = Utils.SELECTED_ALL_TODO;
+            mTitle = R.string.title_actionBTodo;
 
         }
 
-        //Get preferences object
-        preferences = new GetPreferences(getActivity());
+        //Get mPreferences object
+        mPreferences = new GetPreferences(getActivity());
         //Get database access object
-        taskDAO = new TasksDAO(getActivity());
+        mTaskDAO = new TasksDAO(getActivity());
 
         setTitle();
 
-        //Set navigation header title and subtitle
+        prefVibration = mPreferences.buttonsVibration();
+
+        //Set navigation header mTitle and subtitle
         setNavHeaderTitleAndSubtitle();
 
         //Card array list
-        if(cardList == null){
-            cardList = new ArrayList<Card>();
+        if(mCardList == null){
+            mCardList = new ArrayList<Card>();
         }
         //query result
-        if(queryResult == null) {
-            queryResult = new ArrayList<Task>();
+        if(mQueryResult == null) {
+            mQueryResult = new ArrayList<Task>();
         }
 
+        updateList();
 
-        if(queryResult.size() == 0){
-            getTasks(Utils.SELECT_ALL_TODO);
-        }
         updateDisplay();
 
     }
 
+    /**
+     * When loading show the list
+     */
+    private void updateList() {
+
+        switch(mTypeOfListShowing) {
+            case Utils.SELECTED_ALL_TODO:
+                getTasks(Utils.SELECT_ALL_TODO);
+                break;
+            case Utils.SELECTED_ALL_FINISHED:
+                getTasks(Utils.SELECT_ALL_FINISHED);
+                break;
+            case Utils.SELECTED_ALL:
+                getTasks(Utils.SELECT_ALL_TASKS);
+                break;
+        }
+    }
+
 
     /**
-     * Set navigation header title and subtitle
+     * Set navigation header mTitle and subtitle
      */
     private void setNavHeaderTitleAndSubtitle() {
 
-        String navHeader[] = preferences.navHeaderTitleAndSubtitle();
+        String navHeader[] = mPreferences.navHeaderTitleAndSubtitle();
        TextView navHeaderTitle = (TextView) getActivity().findViewById(R.id.nav_header_title);
        TextView navHeaderSubtitle = (TextView) getActivity().findViewById(R.id.nav_header_subtitle);
 
@@ -184,10 +213,10 @@ public class TasksView extends Fragment {
 
     }
 
-    //Set the title
+    //Set the mTitle
     private void setTitle() {
 
-      getActivity().setTitle(title);
+      getActivity().setTitle(mTitle);
 
     }
 
@@ -195,10 +224,10 @@ public class TasksView extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        myContext = getActivity().getBaseContext();
 
         //Set new menu
         setHasOptionsMenu(true);
+
 
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_tasks_view, container, false);
@@ -242,27 +271,32 @@ public class TasksView extends Fragment {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        vibe.vibrate(60);
+        if(prefVibration) {
+            mVibe.vibrate(60);
+        }
         //noinspection SimplifiableIfStatement
         switch (id){
             case R.id.todo_tasks:
 
-                title = R.string.title_actionBTodo;
+                mTitle = R.string.title_actionBTodo;
                 setTitle();
+                mTypeOfListShowing = Utils.SELECTED_ALL_TODO;
                 //Execute query
                 getTasks(Utils.SELECT_ALL_TODO);
                 //Update list
                 updateDisplay();
                 break;
             case R.id.finished_tasks:
-                title = R.string.title_actionBFinish;
+                mTitle = R.string.title_actionBFinish;
                 setTitle();
+                mTypeOfListShowing = Utils.SELECTED_ALL_FINISHED;
                 getTasks(Utils.SELECT_ALL_FINISHED);
                 updateDisplay();
                 break;
             case R.id.all_tasks:
-                title = R.string.title_actionBAll;
+                mTitle = R.string.title_actionBAll;
                 setTitle();
+                mTypeOfListShowing = Utils.SELECTED_ALL;
                 getTasks(Utils.SELECT_ALL_TASKS);
                 //Updatelist
                 updateDisplay();
@@ -280,24 +314,23 @@ public class TasksView extends Fragment {
      */
     private void getTasks(int typeSelect) {
 
-        if(queryResult != null){
-            queryResult.clear();
+        if(mQueryResult != null){
+            mQueryResult.clear();
         }
 
-        queryResult = taskDAO.select(typeSelect);
+        mQueryResult = mTaskDAO.select(typeSelect);
 
 
     }
 
 
 
-    /*@Override
+    @Override
     public void onPause() {
         super.onPause();
+        Toast.makeText(getActivity(), "onPause", Toast.LENGTH_SHORT).show();
 
-        getActivity().getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-
-    }*/
+    }
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -311,25 +344,32 @@ public class TasksView extends Fragment {
 
     }
 
-    //Method to fill cardList
+    //Method to fill mCardList
     private void updateDisplay() {
-        //check query result
-        if (queryResult == null || queryResult.isEmpty()){
 
-            //new PopupDialog(getActivity(), R.layout.popup_dialog_1,"ERROR", "");
+        //Get the list view
+        CardListView tasksView = (CardListView) getActivity().findViewById(R.id.tasksList);
+        //check query result
+        if (mQueryResult == null || mQueryResult.isEmpty()){
+
+            //Update th list
+            if (mMyCardArrayMultiChoiceAdapter != null){
+                mMyCardArrayMultiChoiceAdapter.clear();
+
+            }
             Snackbar.make(getView(),R.string.noTasks,Snackbar.LENGTH_LONG).show();
+
             return;
 
         }
         //Clear before fill
-        cardList.clear();
+        mCardList.clear();
 
-        //Get the list view
-        CardListView tasksView = (CardListView) getActivity().findViewById(R.id.tasksList);
 
-        //Fill 20 example cards
-        for (Task task : queryResult) {
-            final Card taskCard = new Card(getActivity());
+
+        //Fill cards
+        for (Task task : mQueryResult) {
+            Card taskCard = new Card(getActivity());
             taskCard.setId(String.valueOf(task.getId()));
             CustomCardHeader header = new CustomCardHeader(getActivity());
             Log.d(Utils.TAG,"antes de set inner header");
@@ -341,16 +381,18 @@ public class TasksView extends Fragment {
             header.setPopupMenu(R.menu.card_overflow_menu, new CardHeader.OnClickCardHeaderPopupMenuListener() {
                 @Override
                 public void onMenuItemClick(BaseCard baseCard, MenuItem menuItem) {
-                    vibe.vibrate(60); // 60 is time in ms
+                    if(prefVibration) {
+                        mVibe.vibrate(60);
+                    }
                     switch (menuItem.getItemId()) {
 
                         case (R.id.updateTaskMenu):
                             //Future actions here
-                            vibe.vibrate(60);
+
                             changeFragment(Utils.ACTION_UPDATE, Integer.parseInt(baseCard.getId()));
                             break;
                         case (R.id.deleteTaskMenu):
-                            vibe.vibrate(60);
+
                             //Call the method to delete
                             deleteTask(Integer.valueOf(baseCard.getId()));
                             break;
@@ -360,7 +402,7 @@ public class TasksView extends Fragment {
             taskCard.addCardHeader(header);
 
             //Add thumbnail
-            if(preferences.cardThumbnail()){
+            if(mPreferences.cardThumbnail()){
                 //Create thumbnail
                 CardThumbnail thumb = new CardThumbnail(getActivity());
 
@@ -374,13 +416,15 @@ public class TasksView extends Fragment {
 
 
             //Make card swapeable with undo
-            if(preferences.cardSwipe()) {
+            if(mPreferences.cardSwipe()) {
                 taskCard.setSwipeable(true);
                 taskCard.setOnSwipeListener(new Card.OnSwipeListener() {
                     @Override
                     public void onSwipe(Card card) {
                         //we mark for deletion
-                        vibe.vibrate(60); // 60 is time in ms
+                        if(prefVibration) {
+                            mVibe.vibrate(60);
+                        }
                         markAsFinished(card.getId(), Utils.YES, getActivity());
 
                     }
@@ -390,7 +434,9 @@ public class TasksView extends Fragment {
                     @Override
                     public void onUndoSwipe(Card card) {
                         //we undo the mark for deletion
-                        vibe.vibrate(60); // 60 is time in ms
+                        if(prefVibration) {
+                            mVibe.vibrate(60);
+                        }
                         markAsFinished(card.getId(), Utils.NO, getActivity());
 
                     }
@@ -401,19 +447,23 @@ public class TasksView extends Fragment {
                 taskCard.setOnLongClickListener(new Card.OnLongCardClickListener() {
                     @Override
                     public boolean onLongClick(Card card, View view) {
-                        vibe.vibrate(60); // 60 is time in ms
+                        if(prefVibration) {
+                            mVibe.vibrate(60);
+                        }
                         return mMyCardArrayMultiChoiceAdapter.startActionMode(getActivity());
                     }
                 });
 
             }
 
-            taskCard.setTitle(task.getTitle());
+            taskCard.setTitle("Finish date: "+task.getFinished_date()+" Time: "+task.getFinished_time());
             taskCard.setShadow(true);
             taskCard.setOnClickListener(new OnCardClickListener() {
                 @Override
                 public void onClick(Card card, View view) {
-                    vibe.vibrate(60); // 60 is time in ms
+                    if(prefVibration) {
+                        mVibe.vibrate(60);
+                    }
                     //Change the fragment to see detail
                     changeFragment(Utils.ACTION_UPDATE, Integer.parseInt(card.getId()));
 
@@ -422,14 +472,14 @@ public class TasksView extends Fragment {
 
 
             //add card to list
-            cardList.add(taskCard);
+            mCardList.add(taskCard);
 
         }
 
         //Set adapter
-        mMyCardArrayMultiChoiceAdapter = new MyCardArrayMultiChoiceAdapter(getActivity(), cardList);
+        mMyCardArrayMultiChoiceAdapter = new MyCardArrayMultiChoiceAdapter(getActivity(), mCardList);
         mMyCardArrayMultiChoiceAdapter.setEnableUndo(true);
-        String animation = preferences.cardAnimation();
+        String animation = mPreferences.cardAnimation();
 
         AnimationAdapter animationAdapter = getAnimationAdapter(tasksView, animation);
         if (tasksView != null){
@@ -458,10 +508,19 @@ public class TasksView extends Fragment {
         builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
 
             public void onClick(DialogInterface dialog, int which) {
-                vibe.vibrate(60); // 60 is time in ms
+                if(prefVibration) {
+                    mVibe.vibrate(60);
+                }
                 //iF YES CALL TO DELETE METHOD
-                if(taskDAO.deleteTask(taskId)){
+                if(mTaskDAO.deleteTask(taskId)){
                     Toast.makeText(getActivity(),R.string.deleted, Toast.LENGTH_SHORT).show();
+                    //Notify the change to the receiver
+                    Intent intent = new Intent(DatabaseChangedReceiver.ACTION_DATABASE_CHANGED);
+                    intent.putExtra(Utils.ACTION, mTypeOfListShowing);
+                    getActivity().sendBroadcast(intent);
+
+                    //Refresh screen
+                    onStart();
                 }
                 dialog.dismiss();
             }
@@ -473,7 +532,9 @@ public class TasksView extends Fragment {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 // Do nothing
-                vibe.vibrate(60); // 60 is time in ms
+                if(prefVibration) {
+                    mVibe.vibrate(60);
+                }
                 dialog.dismiss();
             }
         });
@@ -493,12 +554,12 @@ public class TasksView extends Fragment {
 
         switch(action){
             case Utils.YES:
-                if(taskDAO.taskFinished(Integer.valueOf(id),Utils.getCurrentDate(),Utils.getCurrentTime())){
+                if(mTaskDAO.taskFinished(Integer.valueOf(id),Utils.getCurrentDate(),Utils.getCurrentTime())){
                     Toast.makeText(ctx, R.string.finished, Toast.LENGTH_SHORT).show();
                 }
                 break;
             case Utils.NO:
-                if(taskDAO.taskFinished(Integer.valueOf(id),null,null)){
+                if(mTaskDAO.taskFinished(Integer.valueOf(id),null,null)){
                     Toast.makeText(ctx,R.string.action_canceled,Toast.LENGTH_SHORT).show();
                 }
                 break;
@@ -597,9 +658,11 @@ public class TasksView extends Fragment {
      * Access from adapter to finish task
      *
      */
-    public static void finishTask(String id, String action,Context ctx){
+    public static void finishTask(String id, String action, Context ctx){
         markAsFinished(id, action,ctx);
     }
+
+
 
 
 }

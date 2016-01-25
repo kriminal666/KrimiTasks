@@ -114,6 +114,8 @@
     <string name="pref_description_card_swipe">Deslizar la tarjeta para marcarla como finalizada. en su defecto se utilizará
                     un click largo.</string>
     <string name="pref_title_card_swipe">Activar deslizamiento lateral</string>
+    <string name="pref_app_vibration">Vibrar al pulsar los botones</string>
+    <string name="pref_title_app_vibration">Vibración en los botones</string>
 
 
 </resources>
