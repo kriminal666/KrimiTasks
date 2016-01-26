@@ -35,6 +35,7 @@ public class SetTime implements View.OnClickListener, TimePickerDialog.OnTimeSet
     private Context context;
     private TextInputLayout inputLayout;
     private Vibrator vibe;
+    private boolean vibrator;
 
     /**
      * Constructor
@@ -43,20 +44,23 @@ public class SetTime implements View.OnClickListener, TimePickerDialog.OnTimeSet
      * @param context
      * @param inputLayout if not exists send null
      */
-    public SetTime(EditText editText, Context context, TextInputLayout inputLayout,Vibrator vibe){
+    public SetTime(EditText editText, Context context, TextInputLayout inputLayout,Vibrator vibe, boolean vibrator){
         this.editText = editText;
         this.editText.setOnClickListener(this);
         this.myCalendar = Calendar.getInstance();
         this.context = context;
         this.inputLayout = inputLayout;
         this.vibe = vibe;
+        this.vibrator = vibrator;
 
     }
 
     @Override
     public void onClick(View v) {
         // TODO Auto-generated method stub
-        vibe.vibrate(60);
+        if(vibrator) {
+            vibe.vibrate(60);
+        }
             //Disable layout errors
             if(this.inputLayout != null && inputLayout.isErrorEnabled()) {
                 this.inputLayout.setErrorEnabled(false);

@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import com.kriminal.helpers.Utils;
 import com.kriminal.main_activity.R;
+import com.kriminal.sweet_alert.SweetAlert;
 
 import java.util.ArrayList;
 
@@ -57,7 +58,7 @@ public class TasksDAO {
 
             }catch(Exception e){
 
-                Toast.makeText(ctx, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+                SweetAlert.errorMessage(ctx,ctx.getResources().getString(R.string.error_title),e.getLocalizedMessage()).show();
 
             }
 
@@ -83,9 +84,9 @@ public class TasksDAO {
 
         //Open to read
         sqliteDatabase = sqlHelper.getReadableDatabase();
-        String selectAllTodo ="select * from tasks where finish_date is NULL and finish_time is NULL order by date, time desc";
+        String selectAllTodo ="select * from tasks where finish_date ='' and finish_time='' order by date, time desc";
         String selectOne = "select * from tasks where id ="+id;
-        String selectFinished ="select * from tasks where finish_date not NULL or finish_time not NULL order by finish_date,finish_time desc";
+        String selectFinished ="select * from tasks where finish_date!='' and finish_time!='' order by finish_date,finish_time desc";
         String selectAll = "select * from tasks";
 
 
@@ -121,6 +122,7 @@ public class TasksDAO {
     //Execute Select query
     private boolean execSelect(String select, int ...taskId) {
         Cursor cursor = null;
+        String[] values ={null,null};
 
         if(result == null){
             result = new ArrayList<>();
@@ -141,7 +143,7 @@ public class TasksDAO {
             cursor = sqliteDatabase.rawQuery(select, null);
 
         }catch(Exception e){
-            Toast.makeText(ctx, e.getMessage(), Toast.LENGTH_LONG).show();
+            SweetAlert.errorMessage(ctx,ctx.getResources().getString(R.string.error_title),e.getLocalizedMessage()).show();
             return false;
         }
 
@@ -195,7 +197,6 @@ public class TasksDAO {
      * @return boolean
      */
     public boolean insertTask(Task task){
-        Toast.makeText(ctx, "InsertTask", Toast.LENGTH_SHORT).show();
         String title;
         String description;
         String date;
@@ -209,7 +210,7 @@ public class TasksDAO {
         time = task.getTime();
 
         String insert = "INSERT INTO tasks VALUES(NULL, '"+title+"','"+description+"','"+date+"'," +
-                "'"+time+"',NULL,NULL)";
+                "'"+time+"', '', '')";
 
         try{
             //open to write database
@@ -219,7 +220,7 @@ public class TasksDAO {
             //Close database
             sqliteDatabase.close();
         }catch(Exception e){
-            Toast.makeText(this.ctx, e.getMessage(), Toast.LENGTH_LONG).show();
+            SweetAlert.errorMessage(ctx,ctx.getResources().getString(R.string.error_title),e.getLocalizedMessage()).show();
             return false;
         }
 
@@ -247,8 +248,8 @@ public class TasksDAO {
         description = task.getDescription();
         date = task.getDate();
         time = task.getTime();
-        finish_date = task.getFinished_date();
-        finish_time = task.getFinished_time();
+        finish_date = "";
+        finish_time = "";
         //Update string
         String update = "UPDATE tasks SET title='"+title+"',description='"+description+"',date = '"+date+"'," +
                 "time = '"+time+"',finish_date = '"+finish_date+"',finish_time = '"+finish_time+"' WHERE id="+id;
@@ -261,8 +262,7 @@ public class TasksDAO {
             //close database
             sqliteDatabase.close();
         }catch(Exception e){
-            Toast.makeText(this.ctx,e.getMessage(),Toast.LENGTH_LONG).show();
-            Log.e(Utils.TAG, update + "\n" + e.getMessage());
+            SweetAlert.errorMessage(ctx,ctx.getResources().getString(R.string.error_title),e.getLocalizedMessage()).show();
             return false;
         }
         //If we don't have exception
@@ -288,8 +288,7 @@ public class TasksDAO {
             //close database
             sqliteDatabase.close();
         }catch(Exception e){
-            Toast.makeText(this.ctx,e.getMessage(),Toast.LENGTH_LONG).show();
-            Log.e(Utils.TAG, update + "\n" + e.getMessage());
+            SweetAlert.errorMessage(ctx,ctx.getResources().getString(R.string.error_title),e.getLocalizedMessage()).show();
             return false;
         }
         //If we don't have exception show message
@@ -310,10 +309,9 @@ public class TasksDAO {
             sqliteDatabase.close();
 
         }catch(Exception e){
-            Toast.makeText(this.ctx,e.getMessage(),Toast.LENGTH_LONG).show();
+            SweetAlert.errorMessage(ctx,ctx.getResources().getString(R.string.error_title),e.getLocalizedMessage()).show();
             return false;
         }
-        Toast.makeText(this.ctx,R.string.deleted,Toast.LENGTH_LONG).show();
 
         return true;
 

@@ -3,7 +3,6 @@ package com.kriminal.fragments;
 import android.app.DatePickerDialog;
 import android.app.Fragment;
 import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Vibrator;
@@ -21,12 +20,13 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.kriminal.database.DatabaseChangedReceiver;
 import com.kriminal.helpers.SetTime;
 import com.kriminal.helpers.Utils;
 import com.kriminal.database.Task;
 import com.kriminal.database.TasksDAO;
 import com.kriminal.main_activity.R;
+import com.kriminal.preferences.GetPreferences;
+import com.kriminal.sweet_alert.SweetAlert;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -82,6 +82,8 @@ public class TaskDetail extends Fragment implements View.OnClickListener {
     private TextInputLayout mDate_layout;
     private TextInputLayout mTime_layout;
     private Calendar myCalendar;
+    private GetPreferences mPreferences;
+    private boolean mVibrator;
 
 
     public TaskDetail() {
@@ -155,6 +157,9 @@ public class TaskDetail extends Fragment implements View.OnClickListener {
 
         //Get DAO object
         mTaskDao = new TasksDAO(getActivity());
+        //Get mPreferences
+        mPreferences = new GetPreferences(getActivity());
+        mVibrator = mPreferences.buttonsVibration();
         //Vibrator
         mVibe = (Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE);
 
@@ -207,11 +212,12 @@ public class TaskDetail extends Fragment implements View.OnClickListener {
         mTaskDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mVibe.vibrate(60);
+                if (mVibrator) {
+                    mVibe.vibrate(60); // 60 is time in ms
+                }
 
 
                 Utils.disableKeyboard(mTaskDate, getActivity());
-                Toast.makeText(getActivity(), "click", Toast.LENGTH_SHORT).show();
 
                 //Disable layout errors if enabled
                 if (mDate_layout.isErrorEnabled()) {
@@ -226,11 +232,13 @@ public class TaskDetail extends Fragment implements View.OnClickListener {
         });
 
         //Set timer
-        new SetTime(mTaskTime, getActivity(), mTime_layout, mVibe);
+        new SetTime(mTaskTime, getActivity(), mTime_layout, mVibe,mVibrator);
 
 
         //Set new menu
         setHasOptionsMenu(true);
+
+
 
         return view;
 
@@ -258,7 +266,8 @@ public class TaskDetail extends Fragment implements View.OnClickListener {
             //Get task from database
             ArrayList<Task> taskList = mTaskDao.select(mTask_id);
             if(taskList==null){
-                Toast.makeText(getActivity(),R.string.noTasks, Toast.LENGTH_SHORT).show();
+                SweetAlert.titleWithContent(getActivity(),getActivity().getResources().getString(R.string.title_info),getActivity().getResources()
+                .getString(R.string.noTasks)).show();
                 return;
             }
 
@@ -321,7 +330,9 @@ public class TaskDetail extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         Log.d(Utils.TAG, "Onclick");
         //Vibrate on click
-        mVibe.vibrate(60); // 60 is time in ms
+        if (mVibrator) {
+            mVibe.vibrate(60); // 60 is time in ms
+        }
         //Get Button
         switch (v.getId()) {
             case R.id.btn_update_task:
@@ -344,7 +355,8 @@ public class TaskDetail extends Fragment implements View.OnClickListener {
         switch (mAction) {
             case Utils.ACTION_INSERT:
                 if (mTaskDao.insertTask(task)) {
-                    Toast.makeText(getActivity(), R.string.inserted, Toast.LENGTH_SHORT).show();
+                    SweetAlert.successMessage(getActivity(),getActivity().getResources().getString(R.string.success_title),
+                            getActivity().getResources().getString(R.string.inserted)).show();
                     goBack();
                 } else {
                     return;
@@ -352,7 +364,8 @@ public class TaskDetail extends Fragment implements View.OnClickListener {
                 break;
             case Utils.ACTION_UPDATE:
                 if (mTaskDao.updateTask(task)) {
-                    Toast.makeText(getActivity(), R.string.updated, Toast.LENGTH_SHORT).show();
+                    SweetAlert.successMessage(getActivity(),getActivity().getResources().getString(R.string.success_title),
+                            getActivity().getResources().getString(R.string.updated)).show();
                     goBack();
                 } else {
                     return;

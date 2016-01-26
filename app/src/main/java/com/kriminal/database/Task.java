@@ -27,13 +27,14 @@ public class Task {
     private String time;
     private String finished_date;
     private String finished_time;
+    private boolean finished;
 
     //Constructors
     public Task() {
 
     }
 
-    public Task(int id, String title, String description, String date, String time, String finished_date, String finished_time) {
+    public Task(int id, String title, String description, String date, String time, String finished_date, String finished_time, boolean finished) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -41,6 +42,7 @@ public class Task {
         this.time = time;
         this.finished_date = finished_date;
         this.finished_time = finished_time;
+        this.finished = finished;
     }
 
     ////Getters & Setters//////
@@ -100,5 +102,21 @@ public class Task {
 
     public String getFinished_time() {
         return finished_time;
+    }
+
+    public boolean isFinished() {
+        return finished;
+    }
+
+    public void setFinished(boolean finished) {
+        this.finished = finished;
+    }
+
+    @Override
+    public String toString(){
+
+        return "ID: "+this.id+"\n"+"Title: "+this.title+"\n"+"Description: "+this.description+"\n"+
+                "Date: "+this.date+"\n"+"Time: "+this.time+"\n"+"FinishDate: "+this.finished_date+"\n"+
+                "FinishTime: "+this.finished_time;
     }
 }

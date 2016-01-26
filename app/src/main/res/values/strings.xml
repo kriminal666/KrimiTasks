@@ -151,6 +151,10 @@
     <string name="pref_title_card_swipe">Activate cards swipe</string>
     <string name="pref_app_vibration">Vibrate when press buttons</string>
     <string name="pref_title_app_vibration">Vibrate on buttons press</string>
+    <string name="error_title">ERROR</string>
+    <string name="success_title">SUCCESS</string>
+    <string name="deleted_title">DELETED</string>
+    <string name="title_info">INFO</string>
 
 
 </resources>

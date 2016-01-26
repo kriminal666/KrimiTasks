@@ -79,12 +79,11 @@ public class Utils {
     //miscellanious
     public static final String YES = "YES";
     public static final String NO = "NO";
+    public static final String OK ="Ok";
 
     private static Calendar calendar = Calendar.getInstance();
-
-
-
-
+    public static final String SUCCESS ="success";
+    public static final String NOT_SUCCESS = "not_success";
 
 
     /**

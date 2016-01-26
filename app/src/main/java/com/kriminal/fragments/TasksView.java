@@ -1,12 +1,9 @@
 package com.kriminal.fragments;
 
-import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Vibrator;
@@ -19,9 +16,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.kriminal.adapter.CardAnimationAdapter;
 import com.kriminal.adapter.MyCardArrayMultiChoiceAdapter;
@@ -32,14 +27,15 @@ import com.kriminal.header.CustomCardHeader;
 import com.kriminal.helpers.Utils;
 import com.kriminal.main_activity.R;
 import com.kriminal.preferences.GetPreferences;
+import com.kriminal.sweet_alert.SweetAlert;
 import com.nhaarman.listviewanimations.appearance.AnimationAdapter;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import it.gmariotti.cardslib.library.internal.Card;
 import it.gmariotti.cardslib.library.internal.Card.OnCardClickListener;
-import it.gmariotti.cardslib.library.internal.CardArrayAdapter;
 import it.gmariotti.cardslib.library.internal.CardHeader;
 import it.gmariotti.cardslib.library.internal.CardThumbnail;
 import it.gmariotti.cardslib.library.internal.base.BaseCard;
@@ -140,7 +136,7 @@ public class TasksView extends Fragment {
     public  void onStart(){
         super.onStart();
 
-        Toast.makeText(getActivity(), "onStart", Toast.LENGTH_SHORT).show();
+
         mVibe = (Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE) ;
         if(mTitle ==-1) {
 
@@ -328,7 +324,7 @@ public class TasksView extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        Toast.makeText(getActivity(), "onPause", Toast.LENGTH_SHORT).show();
+
 
     }
     @Override
@@ -414,46 +410,57 @@ public class TasksView extends Fragment {
 
             }
 
+            //This will set only for finished tasks cards
+            taskCard.setCheckable(false);
 
-            //Make card swapeable with undo
-            if(mPreferences.cardSwipe()) {
-                taskCard.setSwipeable(true);
-                taskCard.setOnSwipeListener(new Card.OnSwipeListener() {
-                    @Override
-                    public void onSwipe(Card card) {
-                        //we mark for deletion
-                        if(prefVibration) {
-                            mVibe.vibrate(60);
+
+            //CARD IS ONLY SWAPEABLE OR HAVE LONG CLICK IF IT IS NOT FINISHED
+
+            if (task.getFinished_date().equals("") && task.getFinished_time().equals("")) {
+
+                //set checkeable for unfinished cards
+                taskCard.setCheckable(true);
+
+                //Make card swapeable with undo
+                if (mPreferences.cardSwipe()) {
+                    taskCard.setSwipeable(true);
+                    taskCard.setOnSwipeListener(new Card.OnSwipeListener() {
+                        @Override
+                        public void onSwipe(Card card) {
+                            //we mark for deletion
+                            if (prefVibration) {
+                                mVibe.vibrate(60);
+                            }
+                            markAsFinished(card.getId(), Utils.YES, getActivity());
+
                         }
-                        markAsFinished(card.getId(), Utils.YES, getActivity());
+                    });
+                    //swipe undo action
+                    taskCard.setOnUndoSwipeListListener(new Card.OnUndoSwipeListListener() {
+                        @Override
+                        public void onUndoSwipe(Card card) {
+                            //we undo the mark for deletion
+                            if (prefVibration) {
+                                mVibe.vibrate(60);
+                            }
+                            markAsFinished(card.getId(), Utils.NO, getActivity());
 
-                    }
-                });
-                //swipe undo action
-                taskCard.setOnUndoSwipeListListener(new Card.OnUndoSwipeListListener() {
-                    @Override
-                    public void onUndoSwipe(Card card) {
-                        //we undo the mark for deletion
-                        if(prefVibration) {
-                            mVibe.vibrate(60);
                         }
-                        markAsFinished(card.getId(), Utils.NO, getActivity());
-
-                    }
-                });
-            }else{
-                //Use Long click
-                //Set on long click listener
-                taskCard.setOnLongClickListener(new Card.OnLongCardClickListener() {
-                    @Override
-                    public boolean onLongClick(Card card, View view) {
-                        if(prefVibration) {
-                            mVibe.vibrate(60);
+                    });
+                } else {
+                    //Use Long click
+                    //Set on long click listener
+                    taskCard.setOnLongClickListener(new Card.OnLongCardClickListener() {
+                        @Override
+                        public boolean onLongClick(Card card, View view) {
+                            if (prefVibration) {
+                                mVibe.vibrate(60);
+                            }
+                            return mMyCardArrayMultiChoiceAdapter.startActionMode(getActivity());
                         }
-                        return mMyCardArrayMultiChoiceAdapter.startActionMode(getActivity());
-                    }
-                });
+                    });
 
+                }
             }
 
             taskCard.setTitle("Finish date: "+task.getFinished_date()+" Time: "+task.getFinished_time());
@@ -461,7 +468,7 @@ public class TasksView extends Fragment {
             taskCard.setOnClickListener(new OnCardClickListener() {
                 @Override
                 public void onClick(Card card, View view) {
-                    if(prefVibration) {
+                    if (prefVibration) {
                         mVibe.vibrate(60);
                     }
                     //Change the fragment to see detail
@@ -499,48 +506,27 @@ public class TasksView extends Fragment {
     private void deleteTask(int id) {
 
         final int taskId = id;
-        //We use alert yes-cancel dialog to be sure user want to delete teacher
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        //We use alert yes-cancel dialog to be sure user want to delete task
 
-        builder.setTitle(R.string.delete);
-        builder.setMessage(R.string.delete_question);
-        builder.setIcon(R.drawable.advise);
-        builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+        SweetAlertDialog.OnSweetClickListener listener = new SweetAlertDialog.OnSweetClickListener() {
+            @Override
+            public void onClick(SweetAlertDialog sweetAlertDialog) {
 
-            public void onClick(DialogInterface dialog, int which) {
-                if(prefVibration) {
-                    mVibe.vibrate(60);
-                }
                 //iF YES CALL TO DELETE METHOD
                 if(mTaskDAO.deleteTask(taskId)){
-                    Toast.makeText(getActivity(),R.string.deleted, Toast.LENGTH_SHORT).show();
-                    //Notify the change to the receiver
-                    Intent intent = new Intent(DatabaseChangedReceiver.ACTION_DATABASE_CHANGED);
-                    intent.putExtra(Utils.ACTION, mTypeOfListShowing);
-                    getActivity().sendBroadcast(intent);
 
-                    //Refresh screen
-                    onStart();
+                    SweetAlert.changeDialogUponConfirm(getActivity(),getActivity().getResources().getString(R.string.deleted_title),
+                            getActivity().getResources().getString(R.string.deleted),Utils.OK,sweetAlertDialog,Utils.SUCCESS);
+
                 }
-                dialog.dismiss();
             }
+        };
 
-        });
 
-        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // Do nothing
-                if(prefVibration) {
-                    mVibe.vibrate(60);
-                }
-                dialog.dismiss();
-            }
-        });
-
-        AlertDialog alert = builder.create();
-        alert.show();
+        //Show the alert
+        SweetAlert.confirmCancelBtnListenerMessage(getActivity(),getActivity().getResources().getString(R.string.delete),
+                getActivity().getResources().getString(R.string.delete_question),
+                Utils.OK,getActivity().getResources().getString(R.string.cancel),listener).show();
 
 
     }
@@ -555,12 +541,14 @@ public class TasksView extends Fragment {
         switch(action){
             case Utils.YES:
                 if(mTaskDAO.taskFinished(Integer.valueOf(id),Utils.getCurrentDate(),Utils.getCurrentTime())){
-                    Toast.makeText(ctx, R.string.finished, Toast.LENGTH_SHORT).show();
+                    //show alert
+                    SweetAlert.successMessage(ctx,ctx.getResources().getString(R.string.success_title),
+                            ctx.getResources().getString(R.string.finished)).show();
                 }
                 break;
             case Utils.NO:
                 if(mTaskDAO.taskFinished(Integer.valueOf(id),null,null)){
-                    Toast.makeText(ctx,R.string.action_canceled,Toast.LENGTH_SHORT).show();
+                    SweetAlert.basicMessage(ctx, ctx.getResources().getString(R.string.action_canceled)).show();
                 }
                 break;
 
