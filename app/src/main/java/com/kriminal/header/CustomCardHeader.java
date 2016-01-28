@@ -35,6 +35,7 @@ public class CustomCardHeader extends CardHeader {
     private String title;
     private String date ;
     private String time;
+    private int color;
 
 
 
@@ -66,6 +67,7 @@ public class CustomCardHeader extends CardHeader {
 
 
         }
+        parent.setBackgroundColor(this.color);
     }
 
     @Override
@@ -92,5 +94,13 @@ public class CustomCardHeader extends CardHeader {
 
     public void setTime(String time) {
         this.time = time;
+    }
+
+    public int getColor() {
+        return color;
+    }
+
+    public void setColor(int colour) {
+        this.color = colour;
     }
 }

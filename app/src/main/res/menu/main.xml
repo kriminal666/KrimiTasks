@@ -36,7 +36,6 @@
             app:showAsAction="never" />
 
 
-
         <item
             android:id="@+id/finished_tasks"
             android:orderInCategory="100"

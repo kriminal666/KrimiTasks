@@ -49,5 +49,10 @@
     <color name="oval_background_center">#D6D6D6</color>
     <color name="oval_background_default_start">#6586F0</color>
     <color name="oval_background_default_end">#4B6CD6</color>
+    <!-- color card -->
+    <color name="color_card_background_color1">#33B4E4</color>
+    <color name="color_card_background_color2">#A966CC</color>
+
+
 
 </resources>

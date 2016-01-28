@@ -87,5 +87,31 @@ public class GetPreferences {
     public boolean buttonsVibration(){
         return sharedPrefs.getBoolean(Utils.PREF_SWITCH_APP_VIBRATION,false);
     }
+
+    /**
+     * Get if user wants colored cards
+     * @return
+     */
+    public boolean coloredCards(){
+        return sharedPrefs.getBoolean(Utils.PREF_ACTIVATE_COLOR_CARD,false);
+
+    }
+
+    /**
+     * Get Primary background
+     * @return
+     */
+    public int getCardBackground1(){
+        return sharedPrefs.getInt(Utils.PREF_CARD_COLOR_BACKGROUND1,0);
+
+    }
+
+    /**
+     * Get Secondary background
+     * @return
+     */
+    public int getCardBackground2(){
+        return sharedPrefs.getInt(Utils.PREF_CARD_COLOR_BACKGROUND2,0);
+    }
 }
 

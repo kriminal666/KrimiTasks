@@ -2,12 +2,14 @@ package com.kriminal.splash_activity;
 
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Window;
 
 import com.kriminal.main_activity.MainActivity;
 import com.kriminal.main_activity.R;
+import com.romainpiel.shimmer.Shimmer;
+import com.romainpiel.shimmer.ShimmerTextView;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -38,6 +40,8 @@ public class SplashScreen extends AppCompatActivity {
 
     // Splash screen delay
     private static final long SPLASH_SCREEN_DELAY = 3000;
+    //Shimmer text
+    private Shimmer shimmer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +52,11 @@ public class SplashScreen extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_splash_screen);
+
+        //Shimmer text
+        ShimmerTextView shimmerText = (ShimmerTextView) findViewById(R.id.shimmer_tv);
+        shimmer = new Shimmer();
+        shimmer.start(shimmerText);
 
         TimerTask task = new TimerTask() {
             @Override
@@ -68,6 +77,8 @@ public class SplashScreen extends AppCompatActivity {
         // Simulador
         Timer timer = new Timer();
         timer.schedule(task, SPLASH_SCREEN_DELAY);
+        //Stop shimmer
+        shimmer.cancel();
     }
 
 

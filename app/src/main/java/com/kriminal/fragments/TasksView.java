@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Vibrator;
@@ -16,13 +17,17 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.kriminal.ColorCard;
 import com.kriminal.adapter.CardAnimationAdapter;
 import com.kriminal.adapter.MyCardArrayMultiChoiceAdapter;
 import com.kriminal.database.DatabaseChangedReceiver;
 import com.kriminal.database.Task;
 import com.kriminal.database.TasksDAO;
+import com.kriminal.drawable.CardThumbnailCircle;
 import com.kriminal.header.CustomCardHeader;
 import com.kriminal.helpers.Utils;
 import com.kriminal.main_activity.R;
@@ -40,6 +45,8 @@ import it.gmariotti.cardslib.library.internal.CardHeader;
 import it.gmariotti.cardslib.library.internal.CardThumbnail;
 import it.gmariotti.cardslib.library.internal.base.BaseCard;
 import it.gmariotti.cardslib.library.view.CardListView;
+import it.gmariotti.cardslib.library.view.CardView;
+import it.gmariotti.cardslib.library.view.helper.CardViewHelper;
 
 /**
  *  * *******************************************************************************
@@ -99,6 +106,7 @@ public class TasksView extends Fragment {
 
     //Vibrations prefs
     private boolean prefVibration;
+    private boolean prefColorCards;
 
 
     public TasksView() {
@@ -153,6 +161,7 @@ public class TasksView extends Fragment {
         setTitle();
 
         prefVibration = mPreferences.buttonsVibration();
+        prefColorCards = mPreferences.coloredCards();
 
         //Set navigation header mTitle and subtitle
         setNavHeaderTitleAndSubtitle();
@@ -343,16 +352,18 @@ public class TasksView extends Fragment {
     //Method to fill mCardList
     private void updateDisplay() {
 
+        Toast.makeText(getActivity(), ""+mQueryResult.size(), Toast.LENGTH_SHORT).show();
+
         //Get the list view
         CardListView tasksView = (CardListView) getActivity().findViewById(R.id.tasksList);
+        //Update th list
+        if (mMyCardArrayMultiChoiceAdapter != null){
+            mMyCardArrayMultiChoiceAdapter.clear();
+
+        }
         //check query result
         if (mQueryResult == null || mQueryResult.isEmpty()){
 
-            //Update th list
-            if (mMyCardArrayMultiChoiceAdapter != null){
-                mMyCardArrayMultiChoiceAdapter.clear();
-
-            }
             Snackbar.make(getView(),R.string.noTasks,Snackbar.LENGTH_LONG).show();
 
             return;
@@ -361,23 +372,25 @@ public class TasksView extends Fragment {
         //Clear before fill
         mCardList.clear();
 
-
-
+        int i=0;
         //Fill cards
         for (Task task : mQueryResult) {
-            Card taskCard = new Card(getActivity());
+            ColorCard taskCard = new ColorCard(getActivity());
+
             taskCard.setId(String.valueOf(task.getId()));
+
             CustomCardHeader header = new CustomCardHeader(getActivity());
-            Log.d(Utils.TAG,"antes de set inner header");
+            Log.d(Utils.TAG, "antes de set inner header");
             header.setTitle(task.getTitle());
             header.setDate(task.getDate());
             header.setTime(task.getTime());
+
 
             //Add overflow buttons to card with menu click listener
             header.setPopupMenu(R.menu.card_overflow_menu, new CardHeader.OnClickCardHeaderPopupMenuListener() {
                 @Override
                 public void onMenuItemClick(BaseCard baseCard, MenuItem menuItem) {
-                    if(prefVibration) {
+                    if (prefVibration) {
                         mVibe.vibrate(60);
                     }
                     switch (menuItem.getItemId()) {
@@ -390,23 +403,44 @@ public class TasksView extends Fragment {
                         case (R.id.deleteTaskMenu):
 
                             //Call the method to delete
-                            deleteTask(Integer.valueOf(baseCard.getId()));
+                            deleteTask(Integer.valueOf(baseCard.getId()), mMyCardArrayMultiChoiceAdapter.getPosition((Card) baseCard));
                             break;
                     }
                 }
             });
             taskCard.addCardHeader(header);
 
+            taskCard.setTitle(task.getTitle());
+            taskCard.setmSubtitle(task.getDate()+" "+task.getTime());
+            if(prefColorCards){
+
+
+                if((i%2)==0){
+
+                    taskCard.setColor(mPreferences.getCardBackground1());
+
+                }else{
+
+                    taskCard.setColor(mPreferences.getCardBackground2());
+                }
+                i++;
+
+            }
+
+
+
             //Add thumbnail
             if(mPreferences.cardThumbnail()){
                 //Create thumbnail
-                CardThumbnail thumb = new CardThumbnail(getActivity());
+                //CardThumbnail thumb = new CardThumbnail(getActivity());
+                CardThumbnailCircle thumb = new CardThumbnailCircle(getActivity());
 
                 //Set resource
                 thumb.setDrawableResource(R.drawable.todo1_48);
 
                 //Add thumbnail to a card
                 taskCard.addCardThumbnail(thumb);
+
 
             }
 
@@ -432,6 +466,14 @@ public class TasksView extends Fragment {
                                 mVibe.vibrate(60);
                             }
                             markAsFinished(card.getId(), Utils.YES, getActivity());
+
+                        }
+                    });
+                    taskCard.setOnUndoSwipeListListener(new Card.OnUndoSwipeListListener() {
+                        @Override
+                        public void onUndoSwipe(Card card) {
+
+                            markAsFinished(card.getId(), Utils.NO, getActivity());
 
                         }
                     });
@@ -503,7 +545,7 @@ public class TasksView extends Fragment {
      * Delete task from database
      * @param id
      */
-    private void deleteTask(int id) {
+    private void deleteTask(int id, final int position) {
 
         final int taskId = id;
         //We use alert yes-cancel dialog to be sure user want to delete task
@@ -514,6 +556,8 @@ public class TasksView extends Fragment {
 
                 //iF YES CALL TO DELETE METHOD
                 if(mTaskDAO.deleteTask(taskId)){
+
+                    mMyCardArrayMultiChoiceAdapter.remove(mMyCardArrayMultiChoiceAdapter.getItem(position));
 
                     SweetAlert.changeDialogUponConfirm(getActivity(),getActivity().getResources().getString(R.string.deleted_title),
                             getActivity().getResources().getString(R.string.deleted),Utils.OK,sweetAlertDialog,Utils.SUCCESS);
@@ -547,7 +591,7 @@ public class TasksView extends Fragment {
                 }
                 break;
             case Utils.NO:
-                if(mTaskDAO.taskFinished(Integer.valueOf(id),null,null)){
+                if(mTaskDAO.taskFinished(Integer.valueOf(id),"","")){
                     SweetAlert.basicMessage(ctx, ctx.getResources().getString(R.string.action_canceled)).show();
                 }
                 break;

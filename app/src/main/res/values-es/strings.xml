@@ -17,7 +17,7 @@
 
     -->
 
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
     <string name="app_name">KrimiTasks</string>
 
     <string name="navigation_drawer_open">Abrir navegación</string>
@@ -95,7 +95,7 @@
     <string name="pref_title_nav_header">Título cabecera de navegación</string>
     <string name="pref_subtitle_nav_header">Subtítulo cabecera de navegación</string>
     <string-array name="pref_card_load_animations">
-        <item>Alpha</item>
+        <item android:background="@color/Light_Green">Alpha</item>
         <item>Izquierda</item>
         <item>Derecha</item>
         <item>Inferior</item>
@@ -120,6 +120,11 @@
     <string name="success_title">ÉXITO</string>
     <string name="deleted_title">DELETED</string>
     <string name="title_info">INFO</string>
+    <string name="krimiTasks_loading">CARGANDO...</string>
+    <string name="pref_choose_card_background1">Escoge color 1</string>
+    <string name="pref_choose_card_background2">Escoge color 2</string>
+    <string name="pref_activate_card_color_title">Activar fondo de color</string>
+    <string name="pref_activate_card_color_descrip">Activa el color de fondo de las tarjetas.</string>
 
 
 </resources>

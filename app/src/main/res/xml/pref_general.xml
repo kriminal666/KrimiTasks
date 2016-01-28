@@ -17,7 +17,8 @@
 
     -->
 
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <SwitchPreference
         android:defaultValue="true"
@@ -72,5 +73,24 @@
         android:negativeButtonText="@null"
         android:positiveButtonText="@null"
         android:title="@string/pref_card_load_animations_title" />
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="pref_activate_color_card"
+        android:summary="@string/pref_activate_card_color_title"
+        android:title="@string/pref_activate_card_color_descrip" />
+
+    <yuku.ambilwarna.widget.AmbilWarnaPreference
+        android:key="pref_color_card_background1"
+        android:defaultValue="@color/color_card_background_color1"
+        app:supportsAlpha="true"
+        android:dependency="pref_activate_color_card"
+        android:title="@string/pref_choose_card_background1" />
+
+    <yuku.ambilwarna.widget.AmbilWarnaPreference
+        android:key="pref_color_card_background2"
+        android:dependency="pref_activate_color_card"
+        android:defaultValue="@color/color_card_background_color2"
+        app:supportsAlpha="true"
+        android:title="@string/pref_choose_card_background2" />
 
 </PreferenceScreen>

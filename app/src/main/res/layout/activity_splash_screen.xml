@@ -28,6 +28,15 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/splash">
+
+        <com.romainpiel.shimmer.ShimmerTextView
+            android:id="@+id/shimmer_tv"
+            android:text="@string/krimiTasks_loading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#444"
+            android:textSize="50sp"/>
+
         <ProgressBar android:indeterminateDrawable="@drawable/progress_dialog"
             android:layout_height="100dp"
             android:layout_width="100dp"

@@ -84,7 +84,7 @@ public class TasksDAO {
 
         //Open to read
         sqliteDatabase = sqlHelper.getReadableDatabase();
-        String selectAllTodo ="select * from tasks where finish_date ='' and finish_time='' order by date, time desc";
+        String selectAllTodo ="select * from tasks where finish_date ='' and finish_time='' order by date , time asc ";
         String selectOne = "select * from tasks where id ="+id;
         String selectFinished ="select * from tasks where finish_date!='' and finish_time!='' order by finish_date,finish_time desc";
         String selectAll = "select * from tasks";
@@ -291,12 +291,17 @@ public class TasksDAO {
             SweetAlert.errorMessage(ctx,ctx.getResources().getString(R.string.error_title),e.getLocalizedMessage()).show();
             return false;
         }
-        //If we don't have exception show message
+        //If we don't have exception
         return true;
 
     }
 
 
+    /**
+     * Delete task from database
+     * @param id
+     * @return
+     */
     public boolean deleteTask (int id){
 
         String delete = "DELETE FROM tasks WHERE id = "+id;

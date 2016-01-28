@@ -53,6 +53,9 @@ public class Utils {
     public static final String PREF_NAV_HEADER_SUBTITLE = "nav_header_subtitle";
     public static final String PREF_SWITCH_CARD_SWIPE = "switch_card_swipe";
     public static final String PREF_SWITCH_APP_VIBRATION = "switch_app_vibration";
+    public static final String PREF_CARD_COLOR_BACKGROUND1 = "pref_color_card_background1";
+    public static final String PREF_CARD_COLOR_BACKGROUND2 = "pref_color_card_background2";
+    public static final String PREF_ACTIVATE_COLOR_CARD = "pref_activate_color_card";
 
 
     //animation values
@@ -62,6 +65,14 @@ public class Utils {
     public static final String ANIM_BOTTOM = "1004";
     public static final String ANIM_BOTTOM_RIGHT = "1005";
     public static final String ANIM_SCALE= "1006";
+
+    public static final String COLOR_1 = "222001";
+    public static final String COLOR_2 = "2002";
+    public static final String COLOR_3 = "2003";
+    public static final String COLOR_4 = "2004";
+    public static final String COLOR_5 = "2005";
+
+
 
     //Database selects
     public static final int SELECT_ALL_TODO = 0;
