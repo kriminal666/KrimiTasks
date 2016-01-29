@@ -125,6 +125,8 @@
     <string name="pref_choose_card_background2">Escoge color 2</string>
     <string name="pref_activate_card_color_title">Activar fondo de color</string>
     <string name="pref_activate_card_color_descrip">Activa el color de fondo de las tarjetas.</string>
+    <string name="task_pending_title">Pendiente para:</string>
+    <string name="task_finished_title">Tarea finalizada en:</string>
 
 
 </resources>

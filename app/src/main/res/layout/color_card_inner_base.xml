@@ -12,7 +12,7 @@
         android:paddingLeft="15dp"
         android:id="@+id/color_card_inner_title"
         style="@style/card.base_simple_title"
-        android:textColor="@android:color/white"/>
+        android:textColor="@color/subTitlesColor"/>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -20,7 +20,7 @@
         android:paddingLeft="15dp"
         android:id="@+id/color_card_inner_subtitle"
         style="@style/card.native.top_colored_subtitle"
-        android:textColor="@android:color/white"/>
+        android:textColor="@color/subTitlesColor"/>
 
 
 

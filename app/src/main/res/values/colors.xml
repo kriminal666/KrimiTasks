@@ -52,6 +52,7 @@
     <!-- color card -->
     <color name="color_card_background_color1">#33B4E4</color>
     <color name="color_card_background_color2">#A966CC</color>
+    <color name="subTitlesColor">#BBB</color>
 
 
 

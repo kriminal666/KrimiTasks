@@ -8,7 +8,6 @@ import android.widget.TextView;
 import com.kriminal.main_activity.R;
 
 import it.gmariotti.cardslib.library.internal.Card;
-import it.gmariotti.cardslib.library.internal.CardThumbnail;
 
 /**
  * Created by Kriminal on 27/01/2016.
@@ -32,7 +31,7 @@ public class ColorCard extends Card {
 
     protected String mTitle;
     protected String mSubtitle;
-    protected int count;
+    protected int mCount;
     protected int color;
 
 
@@ -41,7 +40,9 @@ public class ColorCard extends Card {
     }
 
     public ColorCard(Context context, int innerLayout) {
+
         super(context, innerLayout);
+
     }
 
 
@@ -77,20 +78,20 @@ public class ColorCard extends Card {
         mTitle = title;
     }
 
-    public String getmSubtitle() {
+    public String getSubtitle() {
         return mSubtitle;
     }
 
-    public void setmSubtitle(String mSubtitle) {
+    public void setSubtitle(String mSubtitle) {
         this.mSubtitle = mSubtitle;
     }
 
     public int getCount() {
-        return count;
+        return mCount;
     }
 
-    public void setCount(int count) {
-        this.count = count;
+    public void setCount(int mCount) {
+        this.mCount = mCount;
     }
 
     public int getColor() {
@@ -101,4 +102,5 @@ public class ColorCard extends Card {
         this.color = color;
 
     }
+
 }

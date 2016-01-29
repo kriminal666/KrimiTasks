@@ -51,18 +51,18 @@ public class CustomCardHeader extends CardHeader {
         if (view!=null){
             //Get controls
              TextView inner_title= (TextView) view.findViewById(R.id.header_title);
-             TextView inner_date = (TextView) view.findViewById(R.id.header_data);
-            TextView inner_time = (TextView) view.findViewById(R.id.header_time);
+           //  TextView inner_date = (TextView) view.findViewById(R.id.header_data);
+           // TextView inner_time = (TextView) view.findViewById(R.id.header_time);
             //Set controls
             if(inner_title != null){
                 inner_title.setText(this.title);
             }
-            if(inner_date != null){
+           /* if(inner_date != null){
                 inner_date.setText(this.date);
             }
             if(inner_time != null){
                 inner_time.setText(this.time);
-            }
+            }*/
 
 
 
@@ -103,4 +103,5 @@ public class CustomCardHeader extends CardHeader {
     public void setColor(int colour) {
         this.color = colour;
     }
+
 }

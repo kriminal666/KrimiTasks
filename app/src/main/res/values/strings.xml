@@ -160,6 +160,12 @@
     <string name="pref_choose_card_background2">Choose colour 2</string>
     <string name="pref_activate_card_color_title">Activate colored cards</string>
     <string name="pref_activate_card_color_descrip">Activate the colored background</string>
+    <string name="task_pending_title">Pending for:</string>
+    <string name="task_finished_title">Task finished at:</string>
+
+
+    <!--DateSlider-->
+    <string name="dateSliderTitle">Selected date</string>
 
 
 </resources>

@@ -8,6 +8,9 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TimePicker;
 
+import com.kriminal.dateslider.DateSlider;
+import com.kriminal.dateslider.TimeSlider;
+
 import java.util.Calendar;
 
 /**
@@ -36,6 +39,7 @@ public class SetTime implements View.OnClickListener, TimePickerDialog.OnTimeSet
     private TextInputLayout inputLayout;
     private Vibrator vibe;
     private boolean vibrator;
+    private DateSlider.OnDateSetListener timeListener;
 
     /**
      * Constructor
@@ -44,7 +48,8 @@ public class SetTime implements View.OnClickListener, TimePickerDialog.OnTimeSet
      * @param context
      * @param inputLayout if not exists send null
      */
-    public SetTime(EditText editText, Context context, TextInputLayout inputLayout,Vibrator vibe, boolean vibrator){
+    public SetTime(EditText editText, Context context, TextInputLayout inputLayout,Vibrator vibe, boolean vibrator,
+                   DateSlider.OnDateSetListener timeListener){
         this.editText = editText;
         this.editText.setOnClickListener(this);
         this.myCalendar = Calendar.getInstance();
@@ -52,6 +57,7 @@ public class SetTime implements View.OnClickListener, TimePickerDialog.OnTimeSet
         this.inputLayout = inputLayout;
         this.vibe = vibe;
         this.vibrator = vibrator;
+        this.timeListener = timeListener;
 
     }
 
@@ -68,9 +74,7 @@ public class SetTime implements View.OnClickListener, TimePickerDialog.OnTimeSet
             //Disable Keyboard
             Utils.disableKeyboard(editText,context);
 
-            int hour = myCalendar.get(Calendar.HOUR_OF_DAY);
-            int minute = myCalendar.get(Calendar.MINUTE);
-            new TimePickerDialog(context, this, hour, minute, true).show();
+        new TimeSlider(context,timeListener,myCalendar,15).show();
         }
 
 

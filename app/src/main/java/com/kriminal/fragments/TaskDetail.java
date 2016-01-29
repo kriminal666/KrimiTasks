@@ -20,6 +20,8 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.kriminal.dateslider.DateSlider;
+import com.kriminal.dateslider.DefaultDateSlider;
 import com.kriminal.helpers.SetTime;
 import com.kriminal.helpers.Utils;
 import com.kriminal.database.Task;
@@ -84,6 +86,29 @@ public class TaskDetail extends Fragment implements View.OnClickListener {
     private Calendar myCalendar;
     private GetPreferences mPreferences;
     private boolean mVibrator;
+
+    // define the listener which is called once a user selected the date.
+    private DateSlider.OnDateSetListener mDateSetListener =
+            new DateSlider.OnDateSetListener() {
+                public void onDateSet(DateSlider view, Calendar selectedDate) {
+                    if (mTaskDate != null) {
+                        SimpleDateFormat sdf = new SimpleDateFormat(Utils.DATE_FORMAT);
+                        mTaskDate.setText(sdf.format(selectedDate.getTime()));
+                    }
+                }
+            };
+
+    // define the listener which is called once a user selected the Time.
+    private DateSlider.OnDateSetListener mTimeSetListener =
+            new DateSlider.OnDateSetListener() {
+                public void onDateSet(DateSlider view, Calendar selectedDate) {
+                    // update the dateText view with the corresponding date
+                    if(mTaskTime != null) {
+                        SimpleDateFormat sdf = new SimpleDateFormat(Utils.TIME_FORMAT);
+                        mTaskTime.setText(sdf.format(selectedDate.getTime()));
+                    }
+                }
+            };
 
 
     public TaskDetail() {
@@ -195,7 +220,7 @@ public class TaskDetail extends Fragment implements View.OnClickListener {
 
         //set calendar
         myCalendar = Calendar.getInstance();
-        final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+        /*final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
 
             @Override
             public void onDateSet(DatePicker view, int year, int monthOfYear,
@@ -206,7 +231,7 @@ public class TaskDetail extends Fragment implements View.OnClickListener {
                 myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
                 updateDate();
             }
-        };
+        };*/
 
 
         mTaskDate.setOnClickListener(new View.OnClickListener() {
@@ -224,15 +249,17 @@ public class TaskDetail extends Fragment implements View.OnClickListener {
                     mDate_layout.setErrorEnabled(false);
                 }
 
-                new DatePickerDialog(getActivity(), date, myCalendar
+               /* new DatePickerDialog(getActivity(), date, myCalendar
                         .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
-                        myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+                        myCalendar.get(Calendar.DAY_OF_MONTH)).show();*/
+
+                new DefaultDateSlider(getActivity(), mDateSetListener,myCalendar).show();
 
             }
         });
 
         //Set timer
-        new SetTime(mTaskTime, getActivity(), mTime_layout, mVibe,mVibrator);
+        new SetTime(mTaskTime, getActivity(), mTime_layout, mVibe,mVibrator,mTimeSetListener);
 
 
         //Set new menu
@@ -285,7 +312,9 @@ public class TaskDetail extends Fragment implements View.OnClickListener {
     private void updateDate() {
 
         SimpleDateFormat sdf = new SimpleDateFormat(Utils.DATE_FORMAT);
-        mTaskDate.setText(sdf.format(myCalendar.getTime()));
+        if(mTaskDate !=null) {
+            mTaskDate.setText(sdf.format(myCalendar.getTime()));
+        }
 
     }
 
@@ -354,6 +383,7 @@ public class TaskDetail extends Fragment implements View.OnClickListener {
 
         switch (mAction) {
             case Utils.ACTION_INSERT:
+
                 if (mTaskDao.insertTask(task)) {
                     SweetAlert.successMessage(getActivity(),getActivity().getResources().getString(R.string.success_title),
                             getActivity().getResources().getString(R.string.inserted)).show();
@@ -398,7 +428,7 @@ public class TaskDetail extends Fragment implements View.OnClickListener {
         }
         task.setTitle(mTaskTitle.getText().toString());
         task.setDescription(mTaskDescription.getText().toString());
-        task.setDate(mTaskDate.getText().toString());
+        task.setDate(Utils.parseDateToStore(mTaskDate.getText().toString()));
         task.setTime(mTaskTime.getText().toString());
 
         return task;
@@ -453,4 +483,6 @@ public class TaskDetail extends Fragment implements View.OnClickListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
+
+
 }

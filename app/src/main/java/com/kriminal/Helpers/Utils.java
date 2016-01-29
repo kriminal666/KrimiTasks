@@ -91,8 +91,6 @@ public class Utils {
     public static final String YES = "YES";
     public static final String NO = "NO";
     public static final String OK ="Ok";
-
-    private static Calendar calendar = Calendar.getInstance();
     public static final String SUCCESS ="success";
     public static final String NOT_SUCCESS = "not_success";
 
@@ -173,7 +171,7 @@ public class Utils {
     public static String getCurrentDate(){
 
         SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
-        return sdf.format(calendar.getTime());
+        return sdf.format(Calendar.getInstance().getTime());
 
 
     }
@@ -184,7 +182,54 @@ public class Utils {
      */
     public static String getCurrentTime(){
         SimpleDateFormat sdf = new SimpleDateFormat(TIME_FORMAT);
-        return sdf.format(calendar.getTime());
+        return sdf.format(Calendar.getInstance().getTime());
+    }
+
+    /**
+     * Format date to store in database
+     * @param date
+     * @return
+     */
+    public static String parseDateToStore(String date){
+
+        String[] arrayDate = date.split("/");
+
+        String result ="";
+
+        for(int i=(arrayDate.length-1);i>=0;i--) {
+
+            if (i > 0) {
+                result = result + arrayDate[i] + "-";
+            } else {
+                result = result + arrayDate[i];
+            }
+        }
+
+        return result;
+
+    }
+
+    /**
+     * Format date to view
+     * @param date
+     * @return
+     */
+    public static String parseDateToView(String date){
+        String[] arrayDate = date.split("-");
+
+        String result ="";
+
+        for(int i=(arrayDate.length-1);i>=0;i--) {
+
+            if (i > 0) {
+                result = result + arrayDate[i] + "/";
+            } else {
+                result = result + arrayDate[i];
+            }
+        }
+
+        return result;
+
     }
 
 

@@ -84,10 +84,11 @@ public class TasksDAO {
 
         //Open to read
         sqliteDatabase = sqlHelper.getReadableDatabase();
-        String selectAllTodo ="select * from tasks where finish_date ='' and finish_time='' order by date , time asc ";
+        //, time(strftime('%H:%M', time))
+        String selectAllTodo ="select * from tasks where finish_date ='' and finish_time='' order by date(date),time(time) desc ";
         String selectOne = "select * from tasks where id ="+id;
-        String selectFinished ="select * from tasks where finish_date!='' and finish_time!='' order by finish_date,finish_time desc";
-        String selectAll = "select * from tasks";
+        String selectFinished ="select * from tasks where finish_date!='' and finish_time!='' order by date(finish_date),time(finish_time) desc";
+        String selectAll = "select * from tasks order by date(finish_date),time(finish_time), date(date), time(time) asc";
 
 
         switch (id){
@@ -183,9 +184,9 @@ public class TasksDAO {
         task.setId(cursor.getInt(0));
         task.setTitle(cursor.getString(1));
         task.setDescription(cursor.getString(2));
-        task.setDate(cursor.getString(3));
+        task.setDate(Utils.parseDateToView(cursor.getString(3)));
         task.setTime(cursor.getString(4));
-        task.setFinished_date(cursor.getString(5));
+        task.setFinished_date(Utils.parseDateToView(cursor.getString(5)));
         task.setFinished_time(cursor.getString(6));
 
         return task;
@@ -279,7 +280,9 @@ public class TasksDAO {
      */
     public boolean taskFinished(int id, String finish_date, String finish_time){
 
-        String update = "UPDATE tasks SET finish_date = '"+finish_date+"',finish_time = '"+finish_time+"' WHERE id="+id;
+
+
+        String update = "UPDATE tasks SET finish_date = '"+Utils.parseDateToStore(finish_date)+"',finish_time = '"+finish_time+"' WHERE id="+id;
         try {
             //Open the database to write
             sqliteDatabase = sqlHelper.getWritableDatabase();

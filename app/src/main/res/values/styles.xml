@@ -47,5 +47,12 @@
         <item name="android:background">@color/black_overlay</item>
     </style>
 
+    <style name="Scroller">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/slider_back</item>
+        <item name="android:layout_margin">3dp</item>
+    </style>
+
 
 </resources>

@@ -352,7 +352,6 @@ public class TasksView extends Fragment {
     //Method to fill mCardList
     private void updateDisplay() {
 
-        Toast.makeText(getActivity(), ""+mQueryResult.size(), Toast.LENGTH_SHORT).show();
 
         //Get the list view
         CardListView tasksView = (CardListView) getActivity().findViewById(R.id.tasksList);
@@ -376,14 +375,16 @@ public class TasksView extends Fragment {
         //Fill cards
         for (Task task : mQueryResult) {
             ColorCard taskCard = new ColorCard(getActivity());
+            taskCard.setCardElevation(10);
+            taskCard.setShadow(true);
 
             taskCard.setId(String.valueOf(task.getId()));
 
             CustomCardHeader header = new CustomCardHeader(getActivity());
             Log.d(Utils.TAG, "antes de set inner header");
             header.setTitle(task.getTitle());
-            header.setDate(task.getDate());
-            header.setTime(task.getTime());
+            //header.setDate(task.getDate());
+            //header.setTime(task.getTime());
 
 
             //Add overflow buttons to card with menu click listener
@@ -410,8 +411,18 @@ public class TasksView extends Fragment {
             });
             taskCard.addCardHeader(header);
 
-            taskCard.setTitle(task.getTitle());
-            taskCard.setmSubtitle(task.getDate()+" "+task.getTime());
+            //Set content
+            if(task.getFinished_date().equals("")&& task.getFinished_time().equals("")) {
+
+                taskCard.setTitle(getActivity().getResources().getString(R.string.task_pending_title));
+                taskCard.setSubtitle(task.getDate() + " " + task.getTime());
+
+            }else{
+
+                taskCard.setTitle(getActivity().getResources().getString(R.string.task_finished_title));
+                taskCard.setSubtitle(task.getFinished_date()+" "+task.getFinished_time());
+            }
+
             if(prefColorCards){
 
 
@@ -433,10 +444,14 @@ public class TasksView extends Fragment {
             if(mPreferences.cardThumbnail()){
                 //Create thumbnail
                 //CardThumbnail thumb = new CardThumbnail(getActivity());
-                CardThumbnailCircle thumb = new CardThumbnailCircle(getActivity());
+                CardThumbnail thumb = new CardThumbnail(getActivity());
 
-                //Set resource
-                thumb.setDrawableResource(R.drawable.todo1_48);
+                if(task.getFinished_date().equals("")&& task.getFinished_time().equals("")) {
+                    //Set resource
+                    thumb.setDrawableResource(R.drawable.red_circle);
+                }else{
+                    thumb.setDrawableResource(R.drawable.green_circle);
+                }
 
                 //Add thumbnail to a card
                 taskCard.addCardThumbnail(thumb);
@@ -505,8 +520,6 @@ public class TasksView extends Fragment {
                 }
             }
 
-            taskCard.setTitle("Finish date: "+task.getFinished_date()+" Time: "+task.getFinished_time());
-            taskCard.setShadow(true);
             taskCard.setOnClickListener(new OnCardClickListener() {
                 @Override
                 public void onClick(Card card, View view) {
@@ -524,6 +537,8 @@ public class TasksView extends Fragment {
             mCardList.add(taskCard);
 
         }
+
+        
 
         //Set adapter
         mMyCardArrayMultiChoiceAdapter = new MyCardArrayMultiChoiceAdapter(getActivity(), mCardList);
